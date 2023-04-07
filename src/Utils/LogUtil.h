@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "..\Globals.h"
+#include "..\config.h"
 #include "StringUtil.h"
 
 namespace LogUtil {
