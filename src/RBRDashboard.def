@@ -1,0 +1,3 @@
+LIBRARY	RBRDashboard
+EXPORTS 
+	RBR_CreatePlugin
