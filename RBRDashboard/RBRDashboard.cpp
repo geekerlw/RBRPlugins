@@ -10,20 +10,6 @@
 #include "Lib/Detourxs/detourxs.h"
 #include "RBRDashboard.h"
 
-class IRBRGame;
-
-Plugin* g_pRBRPlugin = nullptr;
-
-BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved) {
-  return TRUE;
-}
-
-IPlugin* RBR_CreatePlugin(IRBRGame* pGame) {
-  if(g_pRBRPlugin == nullptr) g_pRBRPlugin = new Plugin(pGame);
-  return g_pRBRPlugin;
-}
-
-
 tRBRDirectXEndScene Func_OrigRBRDirectXEndScene = nullptr;
 HRESULT __fastcall CustomRBRDirectXEndScene(void* objPointer) {
   // We need code at the beginning of this function that is not a call to another function.

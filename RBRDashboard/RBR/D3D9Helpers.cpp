@@ -348,7 +348,7 @@ inline std::wstring _ToUTF8WString(const std::wstring& s)
 }
 
 
-// Decode UTF8 encoded string back to "normal" (fex R\xe4m\xf6 -> Rämö)
+// Decode UTF8 encoded string back to "normal" (fex R\xe4m\xf6 -> Räm?
 std::wstring _DecodeUtf8String(const std::wstring& s_encoded)
 {
   std::wstring sResult;
@@ -1298,7 +1298,7 @@ HRESULT D3D9SavePixelsToFile32bppPBGRA(UINT width, UINT height, UINT stride, LPB
   IWICBitmapFrameEncode* frame = nullptr;
   IWICStream* stream = nullptr;
   //GUID pf = GUID_WICPixelFormat32bppPBGRA; // DX9 surface bitmap format
-  //GUID pf = GUID_WICPixelFormat24bppBGR; ¨ // GDI bitmap format
+  //GUID pf = GUID_WICPixelFormat24bppBGR; ?// GDI bitmap format
 
   try
   {

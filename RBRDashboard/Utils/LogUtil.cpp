@@ -29,7 +29,7 @@ namespace LogUtil {
 
   // will automatically close when program closes
   std::wofstream output(
-    Globals::PluginFolder + "\\" + Globals::PluginName + ".log"
+    Config::PluginFolder + "\\" + Config::PluginName + ".log"
   );
 
   void ToFile(const wstring& message) {
