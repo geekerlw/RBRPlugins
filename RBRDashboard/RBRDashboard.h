@@ -1,15 +1,20 @@
 #pragma once
 
 #include "RBR/RBR.h"
+#include "RBR/D3D9Helpers.h"
+#include "Utils/INIUtil.h"
 
-class Plugin : public IPlugin {
+IPlugin* g_pRBRPlugin = nullptr;
+class RBRDashboard : public IPlugin {
 private:
   IRBRGame* m_pGame;
+  IMAGE_TEXTURE m_dashtex;
+  INIUtil::INIManager *m_ini;
 
 public:
-  Plugin(IRBRGame* pGame);
+  RBRDashboard(IRBRGame* pGame);
 
-  virtual ~Plugin(void);
+  virtual ~RBRDashboard(void);
 
   virtual const char* GetName(void);
 
@@ -45,4 +50,13 @@ public:
   virtual void CheckPoint(float fCheckPointTime, int iCheckPointID, const char* ptxtPlayerName) {
     // Do nothing
   }
+
+  HRESULT CustomRBRDirectXEndScene(void* objPointer);
+
+private:
+  void LoadINI(void);
+
+  void InitDashboard(void);
+
+  void DrawDashboard(void);
 };
