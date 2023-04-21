@@ -2,6 +2,7 @@
 
 #include <string>
 #include <Windows.h>
+#include "Utils/INIUtil.h"
 
 #ifndef MEMBER_GET_SET
 #define MEMBER_GET_SET(member_type, member) \
@@ -14,18 +15,29 @@ namespace Config {
   const std::string PluginName = "RBRDashboard";
   const std::string PluginsFolder = ".\\Plugins";
   const std::string PluginFolder = PluginsFolder + "\\" + PluginName;
+  const std::string PluginConfig = PluginFolder + "\\" + "RBRDashboard.ini";
+
+  const int MAX_GEAR_NUM = 8;
+  const int MAX_RPM_NUM = 18;
+  INIUtil::INIManager *GIniConfig = nullptr;
 
   class Setting {
+  private:
+    INIUtil::INIManager *m_ini;
   public:
     MEMBER_GET_SET(bool, m_showInVr);
   public:
-    Setting(void) { };
-    virtual ~Setting(void) { };
+    Setting(INIUtil::INIManager *ini) : m_ini(ini) { }
+    virtual ~Setting(void) { m_ini = nullptr; }
 
     void LoadConfig(void);
   };
 
-  class Overlay {
+  class CarSetting {
+  private:
+    INIUtil::INIManager *m_ini;
+    int m_carid;
+
   public:
     MEMBER_GET_SET(std::string, m_textureFile);
     MEMBER_GET_SET(RECT, m_hubPos);
@@ -43,7 +55,7 @@ namespace Config {
     MEMBER_GET_SET(RECT*, m_gearDst);
 
     // recmeter
-    MEMBER_GET_SET(bool, m_rmpShow);
+    MEMBER_GET_SET(bool, m_rpmShow);
     MEMBER_GET_SET(RECT*, m_rpmSrc);
     MEMBER_GET_SET(RECT*, m_rpmDst);
 
@@ -79,7 +91,20 @@ namespace Config {
     MEMBER_GET_SET(RECT, m_warningIconPos);
 
   public:
-    Overlay(void) { };
-    virtual ~Overlay(void) { };
+    CarSetting(INIUtil::INIManager *ini, int carid) : m_ini(ini), m_carid(carid) { 
+      m_gearSrc = new RECT[MAX_GEAR_NUM]();
+      m_gearDst = new RECT[MAX_GEAR_NUM]();
+      m_rpmSrc = new RECT[MAX_RPM_NUM]();
+      m_rpmDst = new RECT[MAX_RPM_NUM]();
+    }
+    virtual ~CarSetting(void) {
+      m_ini = nullptr;
+      delete []m_gearSrc;
+      delete []m_gearDst;
+      delete []m_rpmSrc;
+      delete []m_rpmDst;
+    }
+
+    void LoadConfig(void);
   };
 }

@@ -120,4 +120,8 @@ namespace INIUtil {
       }
     }
   }
+
+  bool INIManager::IsSectionExist(const string& section) {
+    return ini.GetSectionSize(section.c_str()) >= 0;
+  }
 }

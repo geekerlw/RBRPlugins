@@ -1,15 +1,24 @@
 #pragma once
 
+#include <map>
 #include "RBR/RBR.h"
 #include "RBR/D3D9Helpers.h"
 #include "Utils/INIUtil.h"
+#include "config.h"
+
+typedef struct {
+  PIMAGE_TEXTURE m_metatex;
+  PIMAGE_TEXTURE m_dashtex;
+} DashTex_t, *PDashText_t;
 
 class RBRDashboard : public IPlugin {
 private:
   IRBRGame* m_pGame;
   PIMAGE_TEXTURE m_dashtex, m_metatex;
   float m_scalex, m_scaley;
-  INIUtil::INIManager *m_ini;
+  Config::Setting *m_setting;
+  std::map<int, Config::CarSetting*> m_carSettings;
+  std::map<int, PDashText_t> m_cartexs;
 
 public:
   RBRDashboard(IRBRGame* pGame);

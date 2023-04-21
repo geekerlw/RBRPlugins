@@ -56,12 +56,17 @@ RBRDashboard::RBRDashboard(IRBRGame* pGame) : m_pGame(pGame) {
   }
 
   LoadINI();
-  //m_ini = new INIUtil::INIManager(Config::PluginFolder + L"\RBRDashboard.ini");
 }
 
 RBRDashboard::~RBRDashboard(void) {
   LogUtil::ToFile("Destroying Plugin " + Config::PluginName + ".");
-  delete m_ini;
+  delete Config::GIniConfig;
+  delete m_setting;
+  std::map<int, Config::CarSetting*>::iterator iter = m_carSettings.begin();
+  while (iter++ != m_carSettings.end()) {
+    delete iter->second;
+  }
+  m_carSettings.clear();
   delete m_dashtex;
   delete m_metatex;
 }
@@ -84,9 +89,16 @@ const char* RBRDashboard::GetName(void) {
   return Config::PluginName.c_str();
 }
 
-
 void RBRDashboard::LoadINI(void) {
-
+  Config::GIniConfig = new INIUtil::INIManager(Config::PluginConfig);
+  m_setting = new Config::Setting(Config::GIniConfig);
+  m_setting->LoadConfig();
+  for (int i = 0; i < 8; i++) {
+    if (Config::GIniConfig->IsSectionExist("car" + std::to_string(i))) {
+      m_carSettings[i] = new Config::CarSetting(Config::GIniConfig, i);
+      m_carSettings[i]->LoadConfig();
+    }
+  }
 }
 
 void RBRDashboard::InitDashboard(void) {
@@ -96,15 +108,16 @@ void RBRDashboard::InitDashboard(void) {
   m_scalex = std::abs(pb.x - pa.x) / 1920.0f;
   m_scaley = std::abs(pb.y - pa.y) / 1440.0f;
 
+  // load meta texture and dash texture for all cars.
+
+
   std::string dashtexfile = "RBRDashboard.png";
-  //m_ini->Get("Texture", "path", dashtexfile);
 
   std::wstring path = StringUtil::string_to_wide_string(Config::PluginFolder) + L"\\" + StringUtil::string_to_wide_string(dashtexfile);
 
   HRESULT hResult = g_pRBRIDirect3DDevice9->CreateTexture(640, 510, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_dashtex->pTexture, NULL);
 
-  hResult = D3D9CreateRectangleVertexTexBufferFromFile(g_pRBRIDirect3DDevice9,
-    path, 0, 0, 0, 0, m_metatex, 0);
+  hResult = D3D9CreateRectangleVertexTexBufferFromFile(g_pRBRIDirect3DDevice9, path, 0, 0, 0, 0, m_metatex, 0);
 
   if(SUCCEEDED(hResult)) {
     LogUtil::ToFile(L"Success loading TEX: " + path);
@@ -115,8 +128,6 @@ void RBRDashboard::InitDashboard(void) {
 
 HRESULT RBRDashboard::CustomRBRDirectXStartScene(void* objPointer) {
   HRESULT hResult = Func_OrigRBRDirectXStartScene(objPointer);
-
-  //DrawDashboard();
 
   return hResult;
 }

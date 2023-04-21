@@ -19,6 +19,7 @@ namespace INIUtil {
     RECT Get(const string& section, const string& name, RECT& defaultValue);
 
     void Save(bool forceSave = false);
+    bool IsSectionExist(const string& section);
 
   private:
     bool defaultOptionsSet;
