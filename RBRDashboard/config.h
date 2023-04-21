@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <Windows.h>
 
 #ifndef MEMBER_GET_SET
 #define MEMBER_GET_SET(member_type, member) \
@@ -20,11 +21,13 @@ namespace Config {
   public:
     Setting(void) { };
     virtual ~Setting(void) { };
+
+    void LoadConfig(void);
   };
 
   class Overlay {
-  private:
-    MEMBER_GET_SET(std::string, m_textureFile)
+  public:
+    MEMBER_GET_SET(std::string, m_textureFile);
     MEMBER_GET_SET(RECT, m_hubPos);
     MEMBER_GET_SET(float, m_scalex);
     MEMBER_GET_SET(float, m_scaley);

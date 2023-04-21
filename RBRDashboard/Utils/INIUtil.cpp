@@ -90,6 +90,23 @@ namespace INIUtil {
     return boolValue;
   }
 
+  RECT INIManager::Get(const string& section, const string& name, RECT& defaultValue) {
+    string defaultString = "0 0 0 0";
+    string value = Get(section, name, defaultString);
+    RECT rect = { 0, 0, 0, 0 };
+
+    try {
+      sscanf_s(defaultString.c_str(), "%ld %ld %ld %ld", &rect.left, &rect.top, &rect.right, &rect.bottom);
+    }
+    catch (...) {
+      LogUtil::LastExceptionToFile(
+        "Failed getting INI value for section: " + section +
+        ", name: " + name
+      );
+    }
+    return rect;
+  }
+
   void INIManager::Save(bool forceSave) {
     if(defaultOptionsSet || forceSave) {
       SI_Error saveResult = ini.SaveFile(filePath.c_str());

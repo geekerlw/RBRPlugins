@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Windows.h>
 #include "LogUtil.h"
 #include "..\Lib\SimpleINI\SimpleIni.h"
 
@@ -15,6 +16,7 @@ namespace INIUtil {
     int Get(const string& section, const string& name, int defaultValue);
     float Get(const string& section, const string& name, float defaultValue);
     bool Get(const string& section, const string& name, bool defaultValue);
+    RECT Get(const string& section, const string& name, RECT& defaultValue);
 
     void Save(bool forceSave = false);
 

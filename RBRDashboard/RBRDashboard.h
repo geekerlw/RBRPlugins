@@ -4,11 +4,11 @@
 #include "RBR/D3D9Helpers.h"
 #include "Utils/INIUtil.h"
 
-IPlugin* g_pRBRPlugin = nullptr;
 class RBRDashboard : public IPlugin {
 private:
   IRBRGame* m_pGame;
-  IMAGE_TEXTURE m_dashtex;
+  PIMAGE_TEXTURE m_dashtex, m_metatex;
+  float m_scalex, m_scaley;
   INIUtil::INIManager *m_ini;
 
 public:
@@ -51,6 +51,8 @@ public:
     // Do nothing
   }
 
+  HRESULT CustomRBRDirectXStartScene(void* objPointer);
+  
   HRESULT CustomRBRDirectXEndScene(void* objPointer);
 
 private:

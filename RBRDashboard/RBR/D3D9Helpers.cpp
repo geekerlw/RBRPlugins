@@ -1473,11 +1473,12 @@ HRESULT D3D9LoadTextureFromFile(const LPDIRECT3DDEVICE9 pD3Device, const std::ws
     }
 
     // Create empty IDirect3DTexture9 at first and then populate it with bitmap data read from a file
-    if(SUCCEEDED(hResult)) hResult = pD3Device->CreateTexture(pOutImageSize->cx, pOutImageSize->cy, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &texture, NULL);
+    if(SUCCEEDED(hResult)) hResult = pD3Device->CreateTexture(pOutImageSize->cx, pOutImageSize->cy, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &texture, NULL);
     if(SUCCEEDED(hResult))
     {
       D3DLOCKED_RECT rect;
-      hResult = texture->LockRect(0, &rect, 0, D3DLOCK_DISCARD);
+      //hResult = texture->LockRect(0, &rect, 0, D3DLOCK_DISCARD);
+      hResult = texture->LockRect(0, &rect, 0, 0);
       unsigned char* dest = static_cast<unsigned char*>(rect.pBits);
       memcpy(dest, imgBuffer, sizeof(unsigned char) * pOutImageSize->cx * pOutImageSize->cy * 4);
       hResult = texture->UnlockRect(0);

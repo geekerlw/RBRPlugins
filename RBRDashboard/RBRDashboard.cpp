@@ -10,7 +10,25 @@
 #include "Lib/Detourxs/detourxs.h"
 #include "RBRDashboard.h"
 
+extern IPlugin* g_pRBRPlugin;
+
+tRBRDirectXEndScene Func_OrigRBRDirectXStartScene = nullptr;
 tRBRDirectXEndScene Func_OrigRBRDirectXEndScene = nullptr;
+
+HRESULT __fastcall CustomRBRDirectXStartScene(void* objPointer) {
+  // We need code at the beginning of this function that is not a call to another function.
+  // If we just added "Countdown::DrawCountdown();" then hooking EndScene from another 
+  // plugin will fail. This is because of some technicality of how the hooking works.
+
+  /*
+  if (g_pRBRGameMode->gameMode == 0x01) {
+    return ((RBRDashboard*)g_pRBRPlugin)->CustomRBRDirectXStartScene(objPointer);
+  }
+  */
+
+  return ::Func_OrigRBRDirectXStartScene(objPointer);
+}
+
 HRESULT __fastcall CustomRBRDirectXEndScene(void* objPointer) {
   // We need code at the beginning of this function that is not a call to another function.
   // If we just added "Countdown::DrawCountdown();" then hooking EndScene from another 
@@ -24,6 +42,9 @@ HRESULT __fastcall CustomRBRDirectXEndScene(void* objPointer) {
 }
 
 RBRDashboard::RBRDashboard(IRBRGame* pGame) : m_pGame(pGame) {
+  m_dashtex = new IMAGE_TEXTURE();
+  m_metatex = new IMAGE_TEXTURE();
+  m_scalex = m_scaley = 1.0f;
   LogUtil::ToFile("Creating Plugin " + Config::PluginName + ".");
 
   if(CreateDirectory(Config::PluginFolder.c_str(), NULL) ||
@@ -35,12 +56,14 @@ RBRDashboard::RBRDashboard(IRBRGame* pGame) : m_pGame(pGame) {
   }
 
   LoadINI();
-  m_ini = new INIUtil::INIManager(Config::PluginFolder + L"\RBRDashboard.ini");
+  //m_ini = new INIUtil::INIManager(Config::PluginFolder + L"\RBRDashboard.ini");
 }
 
 RBRDashboard::~RBRDashboard(void) {
   LogUtil::ToFile("Destroying Plugin " + Config::PluginName + ".");
   delete m_ini;
+  delete m_dashtex;
+  delete m_metatex;
 }
 
 const char* RBRDashboard::GetName(void) {
@@ -50,6 +73,9 @@ const char* RBRDashboard::GetName(void) {
     RBRAPI_InitializeObjReferences();
 
     InitDashboard();
+
+    auto gtcDirect3DStartScene = new DetourXS((LPVOID)0x0040E880, ::CustomRBRDirectXStartScene, TRUE);
+    Func_OrigRBRDirectXStartScene = (tRBRDirectXEndScene)gtcDirect3DStartScene->GetTrampoline();
 
     auto gtcDirect3DEndScene = new DetourXS((LPVOID)0x0040E890, ::CustomRBRDirectXEndScene, TRUE);
     Func_OrigRBRDirectXEndScene = (tRBRDirectXEndScene)gtcDirect3DEndScene->GetTrampoline();
@@ -64,26 +90,84 @@ void RBRDashboard::LoadINI(void) {
 }
 
 void RBRDashboard::InitDashboard(void) {
-  std::string dashtexfile = "RBRDashboard.dds";
-  m_ini->Get("Texture", "path", dashtexfile);
+  POINT pa, pb;
+  RBRAPI_MapRBRPointToScreenPoint(0, 0, &pa);
+  RBRAPI_MapRBRPointToScreenPoint(640, 480, &pb);
+  m_scalex = std::abs(pb.x - pa.x) / 1920.0f;
+  m_scaley = std::abs(pb.y - pa.y) / 1440.0f;
 
-  std::wstring path = StringUtil::string_to_wide_string(Config::PluginFolder) + StringUtil::string_to_wide_string(dashtexfile);
+  std::string dashtexfile = "RBRDashboard.png";
+  //m_ini->Get("Texture", "path", dashtexfile);
 
-  HRESULT hResult = D3D9CreateRectangleVertexTexBufferFromFile(g_pRBRIDirect3DDevice9,
-    path, 0, 0, 0, 0, &m_dashtex, 0);
+  std::wstring path = StringUtil::string_to_wide_string(Config::PluginFolder) + L"\\" + StringUtil::string_to_wide_string(dashtexfile);
+
+  HRESULT hResult = g_pRBRIDirect3DDevice9->CreateTexture(640, 510, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_dashtex->pTexture, NULL);
+
+  hResult = D3D9CreateRectangleVertexTexBufferFromFile(g_pRBRIDirect3DDevice9,
+    path, 0, 0, 0, 0, m_metatex, 0);
 
   if(SUCCEEDED(hResult)) {
-    LogUtil::ToFile(L"Success loading Tex: " + path);
+    LogUtil::ToFile(L"Success loading TEX: " + path);
   } else {
     LogUtil::ToFile(L"Failed loading TEX: " + path);
   }
 }
 
+HRESULT RBRDashboard::CustomRBRDirectXStartScene(void* objPointer) {
+  HRESULT hResult = Func_OrigRBRDirectXStartScene(objPointer);
+
+  //DrawDashboard();
+
+  return hResult;
+}
+
 HRESULT RBRDashboard::CustomRBRDirectXEndScene(void* objPointer) {
+  HRESULT hResult;
+
   DrawDashboard();
+
+  hResult = Func_OrigRBRDirectXEndScene(objPointer);
+  return hResult;
 }
 
 void RBRDashboard::DrawDashboard(void) {
+  IDirect3DSurface9 *drawSurface = nullptr;
+  m_dashtex->pTexture->GetSurfaceLevel(0, &drawSurface);
+
+  IDirect3DSurface9 *metaSurface = nullptr;
+  m_metatex->pTexture->GetSurfaceLevel(0, &metaSurface);
+
+  // background
+  RECT src = { 0, 0, 640, 510 };
+  RECT dst = { 0, 0, 640, 510 };
+  g_pRBRIDirect3DDevice9->StretchRect(metaSurface, &src, drawSurface, &dst, D3DTEXF_LINEAR);
+
+  // gear
+  src = { 0, 570, 60, 670 };
+  dst = { 250, 250, 310, 350 };
+  g_pRBRIDirect3DDevice9->StretchRect(metaSurface, &src, drawSurface, &dst, D3DTEXF_LINEAR);
+
+  //revmeter
+  src = { 0, 505, 200, 565 };
+  dst = { 60, 130, 260, 190 };
+  g_pRBRIDirect3DDevice9->StretchRect(metaSurface, &src, drawSurface, &dst, D3DTEXF_LINEAR);
+
+
+
+  metaSurface->Release();
+  drawSurface->Release();
+
+  IMAGE_TEXTURE tex = *m_dashtex;
+  HRESULT hResult = D3D9CreateVertexesForTex(
+    &tex, 0, 0, 800 * m_scalex, 800 * m_scaley, 0
+  );
+  if (SUCCEEDED(hResult)) {
+    D3D9DrawVertexTex2D(g_pRBRIDirect3DDevice9, tex.pTexture, tex.vertexes2D);
+  }
+  else {
+    LogUtil::ToFile("Failed creating vertexes.");
+  }
+
   // draw gear
 
   // draw recmeter
