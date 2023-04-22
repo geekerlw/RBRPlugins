@@ -150,6 +150,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="config.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Lib\Detourxs\detourxs.cpp" />
     <ClCompile Include="RBRDashboard.cpp" />
@@ -163,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="RBRDashboard.def" />
+    <None Include="RBRDashboard.ini" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h" />

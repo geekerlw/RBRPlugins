@@ -45,10 +45,16 @@
     <ClCompile Include="RBRDashboard.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="config.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="RBRDashboard.def">
       <Filter>源文件</Filter>
+    </None>
+    <None Include="RBRDashboard.ini">
+      <Filter>资源文件</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

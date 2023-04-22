@@ -1,6 +1,6 @@
 
 #include "LogUtil.h"
-
+#include "../config.h"
 #include <fstream>
 
 namespace LogUtil {

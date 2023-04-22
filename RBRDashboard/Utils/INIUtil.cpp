@@ -91,12 +91,13 @@ namespace INIUtil {
   }
 
   RECT INIManager::Get(const string& section, const string& name, RECT& defaultValue) {
-    string defaultString = "0 0 0 0";
-    string value = Get(section, name, defaultString);
-    RECT rect = { 0, 0, 0, 0 };
+    char defaultString[64] = { 0 };
+    snprintf(defaultString, sizeof(defaultString), "%ld %ld %ld %ld", defaultValue.left, defaultValue.top, defaultValue.right, defaultValue.bottom);
+    string value = Get(section, name, std::string(defaultString));
+    RECT rect = defaultValue;
 
     try {
-      sscanf_s(defaultString.c_str(), "%ld %ld %ld %ld", &rect.left, &rect.top, &rect.right, &rect.bottom);
+      sscanf_s(value.c_str(), "%ld %ld %ld %ld", &rect.left, &rect.top, &rect.right, &rect.bottom);
     }
     catch (...) {
       LogUtil::LastExceptionToFile(
@@ -105,6 +106,39 @@ namespace INIUtil {
       );
     }
     return rect;
+  }
+
+  POINT INIManager::Get(const string& section, const string& name, POINT& defaultValue) {
+    char defaultString[32] = { 0 };
+    snprintf(defaultString, sizeof(defaultString), "%ld %ld", defaultValue.x, defaultValue.y);
+    string value = Get(section, name, std::string(defaultString));
+    POINT point = defaultValue;
+
+    try {
+      sscanf_s(value.c_str(), "%ld %ld", &point.x, &point.y);
+    }
+    catch (...) {
+      LogUtil::LastExceptionToFile(
+        "Failed getting INI value for section: " + section +
+        ", name: " + name
+      );
+    }
+    return point;
+  }
+
+  D3DCOLOR INIManager::Get(const string& section, const string& name, D3DCOLOR& defaultValue) {
+    string value = Get(section, name, std::to_string(defaultValue));
+    D3DCOLOR ulongValue = defaultValue;
+    try {
+      ulongValue = std::stoul(value);
+    }
+    catch (...) {
+      LogUtil::LastExceptionToFile(
+        "Failed getting INI value for section: " + section +
+        ", name: " + name
+      );
+    }
+    return ulongValue;
   }
 
   void INIManager::Save(bool forceSave) {
