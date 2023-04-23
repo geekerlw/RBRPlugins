@@ -6,10 +6,12 @@
 #include "RBR/D3D9Font/D3DFont.h"
 #include "Utils/INIUtil.h"
 #include "config.h"
+#include "RBRVRDash.h"
 
 class RBRDashboard : public IPlugin {
 private:
-  IRBRGame* m_pGame;
+  IRBRGame* m_pGame; 
+  RBRVRDash* m_Vr;
   INIUtil::INIManager* m_ini;
   Config::CarSetting* m_curCarSetting;
   float m_scalex, m_scaley;
@@ -64,6 +66,8 @@ private:
   void LoadINI(void);
 
   void InitDashboard(void);
+
+  void InitVrSystem(void);
 
   void DrawDashboard(void);
 };

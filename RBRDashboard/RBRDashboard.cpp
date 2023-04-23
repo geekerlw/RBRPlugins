@@ -44,6 +44,8 @@ RBRDashboard::RBRDashboard(IRBRGame* pGame) : m_pGame(pGame) {
   m_ini = nullptr;
   m_setting = nullptr;
   m_scalex = m_scaley = 1.0f;
+  m_Vr = new RBRVRDash();
+
   LogUtil::ToFile("Creating Plugin " + Config::PluginName + ".");
 
   if(CreateDirectory(Config::PluginFolder.c_str(), NULL) ||
@@ -59,6 +61,12 @@ RBRDashboard::RBRDashboard(IRBRGame* pGame) : m_pGame(pGame) {
 
 RBRDashboard::~RBRDashboard(void) {
   LogUtil::ToFile("Destroying Plugin " + Config::PluginName + ".");
+
+  if (m_setting->get_m_showInVr() && m_Vr->IsHMDAvailable()) {
+    m_Vr->Shutdown();
+  }
+
+  SAFE_DELETE(m_Vr);
   SAFE_DELETE(m_ini);
   SAFE_DELETE(m_setting);
   std::map<int, Config::CarSetting*>::iterator iter = m_carSettings.begin();
@@ -76,6 +84,8 @@ const char* RBRDashboard::GetName(void) {
     RBRAPI_InitializeObjReferences();
 
     InitDashboard();
+
+    InitVrSystem();
 
     auto gtcDirect3DStartScene = new DetourXS((LPVOID)0x0040E880, ::CustomRBRDirectXStartScene, TRUE);
     Func_OrigRBRDirectXStartScene = (tRBRDirectXEndScene)gtcDirect3DStartScene->GetTrampoline();
@@ -142,6 +152,14 @@ void RBRDashboard::InitDashboard(void) {
     pcurCar->m_engineFont->RestoreDeviceObjects();
 
     iter++;
+  }
+}
+
+void RBRDashboard::InitVrSystem(void) {
+  if (m_setting->get_m_showInVr() && m_Vr->IsHMDAvailable()) {
+    if (m_Vr->Init()) {
+      LogUtil::ToFile("Success initialize VR System.");
+    }
   }
 }
 
@@ -253,7 +271,14 @@ void RBRDashboard::DrawDashboard(void) {
   dst = { m_curCarSetting->get_m_hudPos().x, m_curCarSetting->get_m_hudPos().y,
     (long)(m_curCarSetting->get_m_hudSize().x * m_curCarSetting->get_m_scalex() * m_scalex) + m_curCarSetting->get_m_hudPos().x,
     (long)(m_curCarSetting->get_m_hudSize().y * m_curCarSetting->get_m_scaley() * m_scaley) + m_curCarSetting->get_m_hudPos().y };
-  g_pRBRIDirect3DDevice9->StretchRect(drawSurface, NULL, originRenterTarget, &dst, D3DTEXF_LINEAR);
+  
+  if (m_setting->get_m_showInVr() && m_Vr->IsHMDAvailable()) {
+    m_Vr->HandleVrEvent();
+    m_Vr->SubmitOverlay(m_curCarSetting);
+  }
+  else {
+    g_pRBRIDirect3DDevice9->StretchRect(drawSurface, NULL, originRenterTarget, &dst, D3DTEXF_LINEAR);
+  }
 
   originRenterTarget->Release();
   metaSurface->Release();

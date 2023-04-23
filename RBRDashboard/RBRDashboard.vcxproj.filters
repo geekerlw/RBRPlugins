@@ -48,6 +48,9 @@
     <ClCompile Include="config.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="RBRVRDash.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="RBRDashboard.def">
@@ -56,6 +59,7 @@
     <None Include="RBRDashboard.ini">
       <Filter>资源文件</Filter>
     </None>
+    <None Include="Thirdparty\openvr\bin\win32\openvr_api.dll" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lib\Detourxs\detourxs.h">
@@ -101,6 +105,18 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\openvr\headers\openvr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\openvr\headers\openvr_capi.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\openvr\headers\openvr_driver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RBRVRDash.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
