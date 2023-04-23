@@ -5,6 +5,7 @@
 #include "Utils/INIUtil.h"
 #include "RBR/D3D9Helpers.h"
 #include "RBR/D3D9Font/D3DFont.h"
+#include <d3d11.h>
 
 #ifndef MEMBER_GET_SET
 #define MEMBER_GET_SET(member_type, member) \
@@ -26,6 +27,7 @@ namespace Config {
   private:
     INIUtil::INIManager *m_ini;
   public:
+    MEMBER_GET_SET(bool, m_showIn2D);
     MEMBER_GET_SET(bool, m_showInVr);
   public:
     Setting(INIUtil::INIManager *ini) : m_ini(ini) { }
@@ -40,12 +42,18 @@ namespace Config {
 
   public:
     int m_carid;
+    
+    // 2d game overlay needed
     PIMAGE_TEXTURE m_metatex;
     PIMAGE_TEXTURE m_dashtex;
     CD3DFont* m_timeFont;
     CD3DFont* m_speedFont;
     CD3DFont* m_distanceFont;
     CD3DFont *m_engineFont;
+
+    // vr game overlay needed
+    ID3D11Texture2D *m_pD3D11TextureMeta, * m_pD3D11TextureDash;
+    ID3D11ShaderResourceView *m_pD3D11ShaderResourceView;
 
   public:
     MEMBER_GET_SET(std::string, m_textureFile);
@@ -103,9 +111,17 @@ namespace Config {
       m_gearDst = new RECT[MAX_GEAR_NUM]();
       m_rpmSrc = new RECT[MAX_RPM_NUM]();
       m_rpmDst = new RECT[MAX_RPM_NUM]();
+      m_pD3D11TextureMeta = nullptr;
+      m_pD3D11TextureDash = nullptr;
+      m_pD3D11ShaderResourceView = nullptr;
     }
     virtual ~CarSetting(void) {
       m_ini = nullptr;
+      SAFE_RELEASE(m_metatex->pTexture);
+      SAFE_RELEASE(m_dashtex->pTexture);
+      SAFE_RELEASE(m_pD3D11ShaderResourceView);
+      SAFE_RELEASE(m_pD3D11TextureMeta);
+      SAFE_RELEASE(m_pD3D11TextureDash);
       SAFE_DELETE(m_metatex);
       SAFE_DELETE(m_dashtex);
       SAFE_DELETE(m_timeFont);

@@ -9,6 +9,12 @@
 #include "Utils/INIUtil.h"
 #include "Lib/Detourxs/detourxs.h"
 #include "RBRDashboard.h"
+#include <d3d11.h>
+#include "WICTextureLoader.h"
+#include "SpriteFont.h"
+
+using namespace DirectX;
+#pragma comment(lib, "d3d11.lib")
 
 extern IPlugin* g_pRBRPlugin;
 
@@ -44,6 +50,8 @@ RBRDashboard::RBRDashboard(IRBRGame* pGame) : m_pGame(pGame) {
   m_ini = nullptr;
   m_setting = nullptr;
   m_scalex = m_scaley = 1.0f;
+  m_pID3D11Device = nullptr;
+  m_pID3D11DeviceContext = nullptr;
   m_Vr = new RBRVRDash();
 
   LogUtil::ToFile("Creating Plugin " + Config::PluginName + ".");
@@ -65,7 +73,9 @@ RBRDashboard::~RBRDashboard(void) {
   if (m_setting->get_m_showInVr() && m_Vr->IsHMDAvailable()) {
     m_Vr->Shutdown();
   }
-
+  
+  SAFE_RELEASE(m_pID3D11DeviceContext);
+  SAFE_RELEASE(m_pID3D11Device);
   SAFE_DELETE(m_Vr);
   SAFE_DELETE(m_ini);
   SAFE_DELETE(m_setting);
@@ -81,6 +91,11 @@ const char* RBRDashboard::GetName(void) {
   if(Func_OrigRBRDirectXEndScene == nullptr) {
     // Do the initialization and texture creation only once because RBR may call GetName several times
     LogUtil::ToFile("Initializing the plugin");
+
+    if (!m_setting->get_m_showIn2D() || !m_setting->get_m_showInVr()) {
+      return Config::PluginName.c_str(); // plugin func not enabled, just return.
+    }
+
     RBRAPI_InitializeObjReferences();
 
     InitDashboard();
@@ -122,34 +137,59 @@ void RBRDashboard::InitDashboard(void) {
   while (iter != m_carSettings.end()) {
     Config::CarSetting* pcurCar = iter->second;
 
-    // load texture
-    std::wstring path = StringUtil::string_to_wide_string(Config::PluginFolder) + L"\\" + StringUtil::string_to_wide_string(pcurCar->get_m_textureFile());
-    HRESULT hResultDash = g_pRBRIDirect3DDevice9->CreateTexture(pcurCar->get_m_hudSize().x, pcurCar->get_m_hudSize().y,
-      1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pcurCar->m_dashtex->pTexture, NULL);
-    HRESULT hResultMeta = D3D9CreateRectangleVertexTexBufferFromFile(g_pRBRIDirect3DDevice9, path, 0, 0, 0, 0, pcurCar->m_metatex, 0);
-    if (SUCCEEDED(hResultDash) && SUCCEEDED(hResultMeta)) {
-      LogUtil::ToFile(L"Success loading TEX: " + path);
+    std::wstring textureFile = StringUtil::string_to_wide_string(Config::PluginFolder) + L"\\" + StringUtil::string_to_wide_string(pcurCar->get_m_textureFile());
+
+    // load texture for 2d game overlay
+    if (m_setting->get_m_showIn2D()) {
+      HRESULT hResultDash = g_pRBRIDirect3DDevice9->CreateTexture(pcurCar->get_m_hudSize().x, pcurCar->get_m_hudSize().y,
+        1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pcurCar->m_dashtex->pTexture, NULL);
+      HRESULT hResultMeta = D3D9CreateRectangleVertexTexBufferFromFile(g_pRBRIDirect3DDevice9, textureFile, 0, 0, 0, 0, pcurCar->m_metatex, 0);
+      if (SUCCEEDED(hResultDash) && SUCCEEDED(hResultMeta)) {
+        LogUtil::ToFile(L"Success loading TEX: " + textureFile);
+      }
+      else {
+        LogUtil::ToFile(L"Failed loading TEX: " + textureFile);
+      }
+
+      // load fonts
+      pcurCar->m_timeFont = new CD3DFont(L"Trebuchet MS", pcurCar->get_m_timeTextFontSize(), 0 /*D3DFONT_BOLD*/);
+      pcurCar->m_timeFont->InitDeviceObjects(g_pRBRIDirect3DDevice9);
+      pcurCar->m_timeFont->RestoreDeviceObjects();
+
+      pcurCar->m_speedFont = new CD3DFont(L"Trebuchet MS", pcurCar->get_m_speedTextFontSize(), 0 /*D3DFONT_BOLD*/);
+      pcurCar->m_speedFont->InitDeviceObjects(g_pRBRIDirect3DDevice9);
+      pcurCar->m_speedFont->RestoreDeviceObjects();
+
+      pcurCar->m_distanceFont = new CD3DFont(L"Trebuchet MS", pcurCar->get_m_distanceTextFontSize(), 0 /*D3DFONT_BOLD*/);
+      pcurCar->m_distanceFont->InitDeviceObjects(g_pRBRIDirect3DDevice9);
+      pcurCar->m_distanceFont->RestoreDeviceObjects();
+
+      pcurCar->m_engineFont = new CD3DFont(L"Trebuchet MS", pcurCar->get_m_engineTempTextFontSize(), 0 /*D3DFONT_BOLD*/);
+      pcurCar->m_engineFont->InitDeviceObjects(g_pRBRIDirect3DDevice9);
+      pcurCar->m_engineFont->RestoreDeviceObjects();
     }
-    else {
-      LogUtil::ToFile(L"Failed loading TEX: " + path);
+
+    // load texture for vr game overlay
+    if (m_setting->get_m_showInVr()) {
+      HRESULT hr = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, 0,
+		    D3D11_SDK_VERSION, &m_pID3D11Device, nullptr, &m_pID3D11DeviceContext);
+	    if (SUCCEEDED(hr)) {
+		    LogUtil::ToFile("Success create D3D11 Device and Context");
+        hr = CreateWICTextureFromFile(m_pID3D11Device, m_pID3D11DeviceContext, textureFile.data(), reinterpret_cast<ID3D11Resource**>(&pcurCar->m_pD3D11TextureMeta), &pcurCar->m_pD3D11ShaderResourceView, 0);
+	    }
+
+      if (SUCCEEDED(hr)) {
+        LogUtil::ToFile(L"Success loading VR TEX: " + textureFile);
+      }
+      else {
+        LogUtil::ToFile(L"Failed loading VR TEX: " + textureFile);
+      }
+
+      // load fonts
+      
+
     }
 
-    // load fonts
-    pcurCar->m_timeFont = new CD3DFont(L"Trebuchet MS", pcurCar->get_m_timeTextFontSize(), 0 /*D3DFONT_BOLD*/);
-    pcurCar->m_timeFont->InitDeviceObjects(g_pRBRIDirect3DDevice9);
-    pcurCar->m_timeFont->RestoreDeviceObjects();
-
-    pcurCar->m_speedFont = new CD3DFont(L"Trebuchet MS", pcurCar->get_m_speedTextFontSize(), 0 /*D3DFONT_BOLD*/);
-    pcurCar->m_speedFont->InitDeviceObjects(g_pRBRIDirect3DDevice9);
-    pcurCar->m_speedFont->RestoreDeviceObjects();
-
-    pcurCar->m_distanceFont = new CD3DFont(L"Trebuchet MS", pcurCar->get_m_distanceTextFontSize(), 0 /*D3DFONT_BOLD*/);
-    pcurCar->m_distanceFont->InitDeviceObjects(g_pRBRIDirect3DDevice9);
-    pcurCar->m_distanceFont->RestoreDeviceObjects();
-
-    pcurCar->m_engineFont = new CD3DFont(L"Trebuchet MS", pcurCar->get_m_engineTempTextFontSize(), 0 /*D3DFONT_BOLD*/);
-    pcurCar->m_engineFont->InitDeviceObjects(g_pRBRIDirect3DDevice9);
-    pcurCar->m_engineFont->RestoreDeviceObjects();
 
     iter++;
   }

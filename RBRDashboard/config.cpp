@@ -7,6 +7,7 @@ void Setting::LoadConfig(void) {
         return;
 
     bool bValue = false;
+    set_m_showIn2D(m_ini->Get("setting", "ShowIn2D", bValue));
     set_m_showInVr(m_ini->Get("setting", "ShowInVr", bValue));
 }
 

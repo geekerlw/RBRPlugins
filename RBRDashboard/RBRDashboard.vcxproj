@@ -98,8 +98,8 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>.\Thirdparty\openvr\headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <AdditionalIncludeDirectories>.\Thirdparty\openvr\headers;.\Thirdparty\DirectXTK\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -109,7 +109,7 @@
       <EnableUAC>false</EnableUAC>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <ModuleDefinitionFile>RBRDashboard.def</ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>.\Thirdparty\openvr\bin\win32;.\Thirdparty\openvr\lib\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\Thirdparty\openvr\bin\win32;.\Thirdparty\openvr\lib\win32;.\Thirdparty\DirectXTK;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>.\Thirdparty\openvr\lib\win32\openvr_api.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -169,7 +169,6 @@
   <ItemGroup>
     <None Include="RBRDashboard.def" />
     <None Include="RBRDashboard.ini" />
-    <None Include="Thirdparty\openvr\bin\win32\openvr_api.dll" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h" />
@@ -184,6 +183,9 @@
     <ClInclude Include="RBR\RBR.h" />
     <ClInclude Include="RBR\RBRAPI.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Thirdparty\DirectXTK\Inc\SpriteBatch.h" />
+    <ClInclude Include="Thirdparty\DirectXTK\Inc\SpriteFont.h" />
+    <ClInclude Include="Thirdparty\DirectXTK\Inc\WICTextureLoader.h" />
     <ClInclude Include="Thirdparty\openvr\headers\openvr.h" />
     <ClInclude Include="Thirdparty\openvr\headers\openvr_capi.h" />
     <ClInclude Include="Thirdparty\openvr\headers\openvr_driver.h" />
@@ -195,6 +197,8 @@
   <ItemGroup>
     <Library Include="Lib\Detourxs\LDE64.lib" />
     <Library Include="Lib\Detourxs\LDE64x64.lib" />
+    <Library Include="Thirdparty\DirectXTK\DirectXTK.lib" />
+    <Library Include="Thirdparty\openvr\lib\win32\openvr_api.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

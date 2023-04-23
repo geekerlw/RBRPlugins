@@ -17,6 +17,8 @@ private:
   float m_scalex, m_scaley;
   Config::Setting *m_setting;
   std::map<int, Config::CarSetting*> m_carSettings;
+  ID3D11Device* m_pID3D11Device;
+	ID3D11DeviceContext* m_pID3D11DeviceContext;
 
 public:
   RBRDashboard(IRBRGame* pGame);

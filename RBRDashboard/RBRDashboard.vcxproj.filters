@@ -59,7 +59,6 @@
     <None Include="RBRDashboard.ini">
       <Filter>资源文件</Filter>
     </None>
-    <None Include="Thirdparty\openvr\bin\win32\openvr_api.dll" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lib\Detourxs\detourxs.h">
@@ -119,9 +118,20 @@
     <ClInclude Include="RBRVRDash.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Thirdparty\DirectXTK\Inc\WICTextureLoader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\DirectXTK\Inc\SpriteBatch.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\DirectXTK\Inc\SpriteFont.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="Lib\Detourxs\LDE64.lib" />
     <Library Include="Lib\Detourxs\LDE64x64.lib" />
+    <Library Include="Thirdparty\DirectXTK\DirectXTK.lib" />
+    <Library Include="Thirdparty\openvr\lib\win32\openvr_api.lib" />
   </ItemGroup>
 </Project>
