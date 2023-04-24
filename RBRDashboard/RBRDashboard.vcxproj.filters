@@ -51,6 +51,9 @@
     <ClCompile Include="RBRVRDash.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Utils\D3DUtil.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="RBRDashboard.def">
@@ -125,6 +128,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Thirdparty\DirectXTK\Inc\SpriteFont.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\D3DUtil.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

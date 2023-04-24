@@ -34,7 +34,7 @@ namespace Config {
     MEMBER_GET_SET(bool, m_showIn2D);
     MEMBER_GET_SET(bool, m_showInVr);
   public:
-    Setting(INIUtil::INIManager *ini) : m_ini(ini) { }
+    Setting(INIUtil::INIManager* ini) : m_ini(ini) { LoadConfig(); }
     virtual ~Setting(void) { m_ini = nullptr; }
 
     void LoadConfig(void);
@@ -123,6 +123,7 @@ namespace Config {
       m_pD3D11TextureMeta = nullptr;
       m_pD3D11TextureDash = nullptr;
       m_pD3D11ShaderResourceView = nullptr;
+      LoadConfig();
     }
     virtual ~CarSetting(void) {
       m_ini = nullptr;

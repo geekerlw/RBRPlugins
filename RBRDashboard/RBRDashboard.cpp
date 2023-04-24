@@ -94,7 +94,7 @@ const char* RBRDashboard::GetName(void) {
     // Do the initialization and texture creation only once because RBR may call GetName several times
     LogUtil::ToFile("Initializing the plugin");
 
-    if (!m_setting->get_m_showIn2D() || !m_setting->get_m_showInVr()) {
+    if (!m_setting->get_m_showIn2D() && !m_setting->get_m_showInVr()) {
       return Config::PluginName.c_str(); // plugin func not enabled, just return.
     }
 
@@ -117,11 +117,9 @@ const char* RBRDashboard::GetName(void) {
 void RBRDashboard::LoadINI(void) {
   m_ini = new INIUtil::INIManager(Config::PluginConfig);
   m_setting = new Config::Setting(m_ini);
-  m_setting->LoadConfig();
   for (int i = 0; i < 8; i++) {
     if (m_ini->IsSectionExist("car" + std::to_string(i))) {
       Config::CarSetting *carSetting = new Config::CarSetting(m_ini, i);
-      carSetting->LoadConfig();
       m_carSettings[i] = carSetting;
     }
   }
@@ -192,8 +190,8 @@ void RBRDashboard::InitDashboard(void) {
       desc.Usage = D3D11_USAGE_DEFAULT;
       desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
       desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED;
-      hResultDash = device->CreateTexture2D(&desc, nullptr, &m_pD3D11TextureDash);
-      hResultMeta = CreateWICTextureFromFile(m_pID3D11Device, m_pID3D11DeviceContext, textureFile.data(), reinterpret_cast<ID3D11Resource**>(&pcurCar->m_pD3D11TextureMeta), &pcurCar->m_pD3D11ShaderResourceView, 0);
+      HRESULT hResultDash = m_pID3D11Device->CreateTexture2D(&desc, nullptr, &pcurCar->m_pD3D11TextureDash);
+      HRESULT hResultMeta = CreateWICTextureFromFile(m_pID3D11Device, m_pID3D11DeviceContext, textureFile.data(), reinterpret_cast<ID3D11Resource**>(&pcurCar->m_pD3D11TextureMeta), &pcurCar->m_pD3D11ShaderResourceView, 0);
       if (SUCCEEDED(hResultDash) && SUCCEEDED(hResultMeta)) {
         LogUtil::ToFile(L"Success loading VR TEX: " + textureFile);
       }
@@ -366,7 +364,7 @@ void RBRDashboard::DrawVROverlay(void) {
     int gear = g_pRBRCarInfo->gear;
     src = D3DUtil::D3D9ToD3D11Rect(m_curCarSetting->get_m_gearSrc() + gear);
     dst = D3DUtil::D3D9ToD3D11Rect(m_curCarSetting->get_m_gearDst() + gear);
-    m_pID3D11DeviceContext->CopySubresourceRegion(dashTexture, 0, dst.left, dst.top, 0, metaTexture, &src);
+    m_pID3D11DeviceContext->CopySubresourceRegion(dashTexture, 0, dst.left, dst.top, 0, metaTexture, 0, &src);
   }
 
   // revmeter
@@ -374,7 +372,7 @@ void RBRDashboard::DrawVROverlay(void) {
     for (int i = 0; i < Config::MAX_RPM_NUM && i < std::round(g_pRBRCarInfo->rpm / 500); i++) {
       src = D3DUtil::D3D9ToD3D11Rect(m_curCarSetting->get_m_rpmSrc() + i);
       dst = D3DUtil::D3D9ToD3D11Rect(m_curCarSetting->get_m_rpmDst() + i);
-      m_pID3D11DeviceContext->CopySubresourceRegion(dashTexture, 0, dst.left, dst.top, 0, metaTexture, &src);
+      m_pID3D11DeviceContext->CopySubresourceRegion(dashTexture, 0, dst.left, dst.top, 0, metaTexture, 0, &src);
     }
   }
 
@@ -382,32 +380,32 @@ void RBRDashboard::DrawVROverlay(void) {
 
   if (m_curCarSetting->get_m_timeShow()) {
     std::string timestr = GetSecondsAsMISSMS(g_pRBRCarInfo->raceTime);
-    XMFLOAT2 textpos(m_curCarSetting->get_m_timeTextPos().x, m_curCarSetting->get_m_timeTextPos().y);
-    m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, timestr, textpos, DirectX::Colors::White);
+    XMFLOAT2 textpos((float)m_curCarSetting->get_m_timeTextPos().x, (float)m_curCarSetting->get_m_timeTextPos().y);
+    m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, timestr.c_str(), textpos, DirectX::Colors::White);
   }
 
   if (m_curCarSetting->get_m_speedShow()) {
     char speedstr[16];
     snprintf(speedstr, sizeof(speedstr), "%0.2f KM/h", g_pRBRCarInfo->speed);
-    XMFLOAT2 textpos(m_curCarSetting->get_m_speedTextPos().x, m_curCarSetting->get_m_speedTextPos().y);
-    m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, timestr, textpos, DirectX::Colors::White);
+    XMFLOAT2 textpos((float)m_curCarSetting->get_m_speedTextPos().x, (float)m_curCarSetting->get_m_speedTextPos().y);
+    m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, speedstr, textpos, DirectX::Colors::White);
   }
 
   if (m_curCarSetting->get_m_distanceShow()) {
     char distancestr[16];
     snprintf(distancestr, sizeof(distancestr), "%0.2f KM", g_pRBRCarInfo->distanceFromStartControl);
-    XMFLOAT2 textpos(m_curCarSetting->get_m_distancePos0().x, m_curCarSetting->get_m_distancePos0().y);
-    m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, timestr, textpos, DirectX::Colors::White);
+    XMFLOAT2 textpos((float)m_curCarSetting->get_m_distancePos0().x, (float)m_curCarSetting->get_m_distancePos0().y);
+    m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, distancestr, textpos, DirectX::Colors::White);
     snprintf(distancestr, sizeof(distancestr), "%0.2f KM", g_pRBRCarInfo->distanceToFinish);
-    textpos = XMFLOAT2(m_curCarSetting->get_m_distancePos1().x, m_curCarSetting->get_m_distancePos1().y);
-    m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, timestr, textpos, DirectX::Colors::White);
+    textpos = XMFLOAT2((float)m_curCarSetting->get_m_distancePos1().x, (float)m_curCarSetting->get_m_distancePos1().y);
+    m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, distancestr, textpos, DirectX::Colors::White);
   }
 
   if (m_curCarSetting->get_m_engineTempShow()) {
     char engineTempstr[16];
     snprintf(engineTempstr, sizeof(engineTempstr), "%02d", (int)g_pRBRCarInfo->temp);
-    XMFLOAT2 textpos(m_curCarSetting->get_m_engineTempPos().x, m_curCarSetting->get_m_engineTempPos().y);
-    m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, timestr, textpos, DirectX::Colors::White);
+    XMFLOAT2 textpos((float)m_curCarSetting->get_m_engineTempPos().x, (float)m_curCarSetting->get_m_engineTempPos().y);
+    m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, engineTempstr, textpos, DirectX::Colors::White);
   }
 
   m_curCarSetting->m_spriteBatch->End();

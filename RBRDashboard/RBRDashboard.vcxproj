@@ -161,6 +161,7 @@
     <ClCompile Include="RBR\D3D9Font\SharedFont.cpp" />
     <ClCompile Include="RBR\D3D9Helpers.cpp" />
     <ClCompile Include="RBR\RBRAPI.cpp" />
+    <ClCompile Include="Utils\D3DUtil.cpp" />
     <ClCompile Include="Utils\INIUtil.cpp" />
     <ClCompile Include="Utils\LogUtil.cpp" />
     <ClCompile Include="Utils\StringUtil.cpp" />
@@ -189,6 +190,7 @@
     <ClInclude Include="Thirdparty\openvr\headers\openvr.h" />
     <ClInclude Include="Thirdparty\openvr\headers\openvr_capi.h" />
     <ClInclude Include="Thirdparty\openvr\headers\openvr_driver.h" />
+    <ClInclude Include="Utils\D3DUtil.h" />
     <ClInclude Include="Utils\INIUtil.h" />
     <ClInclude Include="Utils\LogUtil.h" />
     <ClInclude Include="Utils\StringUtil.h" />
