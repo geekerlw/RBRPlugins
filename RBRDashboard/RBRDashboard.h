@@ -72,4 +72,6 @@ private:
   void InitVrSystem(void);
 
   void DrawDashboard(void);
+
+  void DrawVROverlay(void);
 };

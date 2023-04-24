@@ -7,11 +7,13 @@
 #include "Utils/LogUtil.h"
 #include "Utils/StringUtil.h"
 #include "Utils/INIUtil.h"
+#include "Utils/D3DUtil.h"
 #include "Lib/Detourxs/detourxs.h"
 #include "RBRDashboard.h"
 #include <d3d11.h>
 #include "WICTextureLoader.h"
 #include "SpriteFont.h"
+#include "SpriteBatch.h"
 
 using namespace DirectX;
 #pragma comment(lib, "d3d11.lib")
@@ -149,6 +151,7 @@ void RBRDashboard::InitDashboard(void) {
       }
       else {
         LogUtil::ToFile(L"Failed loading TEX: " + textureFile);
+        continue;
       }
 
       // load fonts
@@ -173,12 +176,25 @@ void RBRDashboard::InitDashboard(void) {
     if (m_setting->get_m_showInVr()) {
       HRESULT hr = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, 0,
 		    D3D11_SDK_VERSION, &m_pID3D11Device, nullptr, &m_pID3D11DeviceContext);
-	    if (SUCCEEDED(hr)) {
-		    LogUtil::ToFile("Success create D3D11 Device and Context");
-        hr = CreateWICTextureFromFile(m_pID3D11Device, m_pID3D11DeviceContext, textureFile.data(), reinterpret_cast<ID3D11Resource**>(&pcurCar->m_pD3D11TextureMeta), &pcurCar->m_pD3D11ShaderResourceView, 0);
+	    if (FAILED(hr)) {
+		    LogUtil::ToFile("Failed create D3D11 Device and Context");
+        continue;
 	    }
 
-      if (SUCCEEDED(hr)) {
+      D3D11_TEXTURE2D_DESC desc;
+      ZeroMemory(&desc, sizeof(desc));
+      desc.Width = (UINT)pcurCar->get_m_hudSize().x;
+      desc.Height = (UINT)pcurCar->get_m_hudSize().y;
+      desc.MipLevels = 1;
+      desc.ArraySize = 1;
+      desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+      desc.SampleDesc.Count = 1;
+      desc.Usage = D3D11_USAGE_DEFAULT;
+      desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+      desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED;
+      hResultDash = device->CreateTexture2D(&desc, nullptr, &m_pD3D11TextureDash);
+      hResultMeta = CreateWICTextureFromFile(m_pID3D11Device, m_pID3D11DeviceContext, textureFile.data(), reinterpret_cast<ID3D11Resource**>(&pcurCar->m_pD3D11TextureMeta), &pcurCar->m_pD3D11ShaderResourceView, 0);
+      if (SUCCEEDED(hResultDash) && SUCCEEDED(hResultMeta)) {
         LogUtil::ToFile(L"Success loading VR TEX: " + textureFile);
       }
       else {
@@ -186,10 +202,12 @@ void RBRDashboard::InitDashboard(void) {
       }
 
       // load fonts
-      
-
+      pcurCar->m_spriteBatch = new DX11::SpriteBatch(m_pID3D11DeviceContext);
+      pcurCar->m_timeSpriteFont = new DX11::SpriteFont(m_pID3D11Device, L"Arial.spritefont");
+      pcurCar->m_speedSpriteFont = new DX11::SpriteFont(m_pID3D11Device, L"Arial.spritefont");
+      pcurCar->m_distanceSpriteFont = new DX11::SpriteFont(m_pID3D11Device, L"Arial.spritefont");
+      pcurCar->m_engineSpriteFont = new DX11::SpriteFont(m_pID3D11Device, L"Arial.spritefont");
     }
-
 
     iter++;
   }
@@ -227,7 +245,13 @@ HRESULT RBRDashboard::CustomRBRDirectXStartScene(void* objPointer) {
 HRESULT RBRDashboard::CustomRBRDirectXEndScene(void* objPointer) {
   HRESULT hResult;
 
-  DrawDashboard();
+  if (m_setting->get_m_showIn2D()) {
+    DrawDashboard();
+  }
+  if (m_setting->get_m_showInVr()) {
+    m_Vr->HandleVrEvent();
+    DrawVROverlay();
+  }
 
   hResult = Func_OrigRBRDirectXEndScene(objPointer);
   return hResult;
@@ -312,15 +336,81 @@ void RBRDashboard::DrawDashboard(void) {
     (long)(m_curCarSetting->get_m_hudSize().x * m_curCarSetting->get_m_scalex() * m_scalex) + m_curCarSetting->get_m_hudPos().x,
     (long)(m_curCarSetting->get_m_hudSize().y * m_curCarSetting->get_m_scaley() * m_scaley) + m_curCarSetting->get_m_hudPos().y };
   
-  if (m_setting->get_m_showInVr() && m_Vr->IsHMDAvailable()) {
-    m_Vr->HandleVrEvent();
-    m_Vr->SubmitOverlay(m_curCarSetting);
-  }
-  else {
-    g_pRBRIDirect3DDevice9->StretchRect(drawSurface, NULL, originRenterTarget, &dst, D3DTEXF_LINEAR);
-  }
+  g_pRBRIDirect3DDevice9->StretchRect(drawSurface, NULL, originRenterTarget, &dst, D3DTEXF_LINEAR);
 
   originRenterTarget->Release();
   metaSurface->Release();
   drawSurface->Release();
+}
+
+void RBRDashboard::DrawVROverlay(void) {
+  if (m_curCarSetting == nullptr || !m_Vr->IsHMDAvailable())
+    return;
+
+  ID3D11Texture2D *metaTexture = m_curCarSetting->m_pD3D11TextureMeta;
+  ID3D11Texture2D *dashTexture = m_curCarSetting->m_pD3D11TextureDash;
+
+  D3D11_BOX src, dst;
+  ZeroMemory(&src, sizeof(D3D11_BOX));
+  ZeroMemory(&dst, sizeof(D3D11_BOX));
+
+  // background
+  if (m_curCarSetting->get_m_backgroudShow()) {
+    src = D3DUtil::D3D9ToD3D11Rect(m_curCarSetting->get_m_backgroundSrc());
+    dst = D3DUtil::D3D9ToD3D11Rect(m_curCarSetting->get_m_backgroundDst());
+    m_pID3D11DeviceContext->CopySubresourceRegion(dashTexture, 0, dst.left, dst.top, 0, metaTexture, 0, &src);
+  }
+
+  // gear
+  if (m_curCarSetting->get_m_gearShow()) {
+    int gear = g_pRBRCarInfo->gear;
+    src = D3DUtil::D3D9ToD3D11Rect(m_curCarSetting->get_m_gearSrc() + gear);
+    dst = D3DUtil::D3D9ToD3D11Rect(m_curCarSetting->get_m_gearDst() + gear);
+    m_pID3D11DeviceContext->CopySubresourceRegion(dashTexture, 0, dst.left, dst.top, 0, metaTexture, &src);
+  }
+
+  // revmeter
+  if (m_curCarSetting->get_m_rpmShow()) {
+    for (int i = 0; i < Config::MAX_RPM_NUM && i < std::round(g_pRBRCarInfo->rpm / 500); i++) {
+      src = D3DUtil::D3D9ToD3D11Rect(m_curCarSetting->get_m_rpmSrc() + i);
+      dst = D3DUtil::D3D9ToD3D11Rect(m_curCarSetting->get_m_rpmDst() + i);
+      m_pID3D11DeviceContext->CopySubresourceRegion(dashTexture, 0, dst.left, dst.top, 0, metaTexture, &src);
+    }
+  }
+
+  m_curCarSetting->m_spriteBatch->Begin();
+
+  if (m_curCarSetting->get_m_timeShow()) {
+    std::string timestr = GetSecondsAsMISSMS(g_pRBRCarInfo->raceTime);
+    XMFLOAT2 textpos(m_curCarSetting->get_m_timeTextPos().x, m_curCarSetting->get_m_timeTextPos().y);
+    m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, timestr, textpos, DirectX::Colors::White);
+  }
+
+  if (m_curCarSetting->get_m_speedShow()) {
+    char speedstr[16];
+    snprintf(speedstr, sizeof(speedstr), "%0.2f KM/h", g_pRBRCarInfo->speed);
+    XMFLOAT2 textpos(m_curCarSetting->get_m_speedTextPos().x, m_curCarSetting->get_m_speedTextPos().y);
+    m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, timestr, textpos, DirectX::Colors::White);
+  }
+
+  if (m_curCarSetting->get_m_distanceShow()) {
+    char distancestr[16];
+    snprintf(distancestr, sizeof(distancestr), "%0.2f KM", g_pRBRCarInfo->distanceFromStartControl);
+    XMFLOAT2 textpos(m_curCarSetting->get_m_distancePos0().x, m_curCarSetting->get_m_distancePos0().y);
+    m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, timestr, textpos, DirectX::Colors::White);
+    snprintf(distancestr, sizeof(distancestr), "%0.2f KM", g_pRBRCarInfo->distanceToFinish);
+    textpos = XMFLOAT2(m_curCarSetting->get_m_distancePos1().x, m_curCarSetting->get_m_distancePos1().y);
+    m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, timestr, textpos, DirectX::Colors::White);
+  }
+
+  if (m_curCarSetting->get_m_engineTempShow()) {
+    char engineTempstr[16];
+    snprintf(engineTempstr, sizeof(engineTempstr), "%02d", (int)g_pRBRCarInfo->temp);
+    XMFLOAT2 textpos(m_curCarSetting->get_m_engineTempPos().x, m_curCarSetting->get_m_engineTempPos().y);
+    m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, timestr, textpos, DirectX::Colors::White);
+  }
+
+  m_curCarSetting->m_spriteBatch->End();
+
+  return m_Vr->SubmitOverlay(m_curCarSetting);
 }

@@ -6,6 +6,10 @@
 #include "RBR/D3D9Helpers.h"
 #include "RBR/D3D9Font/D3DFont.h"
 #include <d3d11.h>
+#include "SpriteFont.h"
+#include "SpriteBatch.h"
+
+using namespace DirectX;
 
 #ifndef MEMBER_GET_SET
 #define MEMBER_GET_SET(member_type, member) \
@@ -49,11 +53,16 @@ namespace Config {
     CD3DFont* m_timeFont;
     CD3DFont* m_speedFont;
     CD3DFont* m_distanceFont;
-    CD3DFont *m_engineFont;
+    CD3DFont* m_engineFont;
 
     // vr game overlay needed
     ID3D11Texture2D *m_pD3D11TextureMeta, * m_pD3D11TextureDash;
     ID3D11ShaderResourceView *m_pD3D11ShaderResourceView;
+    DX11::SpriteBatch *m_spriteBatch;
+    DX11::SpriteFont *m_timeSpriteFont;
+    DX11::SpriteFont *m_speedSpriteFont;
+    DX11::SpriteFont *m_distanceSpriteFont;
+    DX11::SpriteFont *m_engineSpriteFont;
 
   public:
     MEMBER_GET_SET(std::string, m_textureFile);
@@ -126,6 +135,11 @@ namespace Config {
       SAFE_DELETE(m_dashtex);
       SAFE_DELETE(m_timeFont);
       SAFE_DELETE(m_speedFont);
+      SAFE_DELETE(m_distanceFont);
+      SAFE_DELETE(m_engineFont);
+      SAFE_DELETE(m_spriteBatch);
+      SAFE_DELETE(m_timeSpriteFont);
+      SAFE_DELETE(m_speedSpriteFont);
       SAFE_DELETE(m_distanceFont);
       SAFE_DELETE(m_engineFont);
       delete []m_gearSrc;
