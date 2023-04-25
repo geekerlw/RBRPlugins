@@ -25,7 +25,7 @@ void CarSetting::LoadConfig(void) {
     D3DCOLOR colorValue = 0xFFFFFFFF;
 
     // setting
-    set_m_textureFile(m_ini->Get(section, "TextureFile", sValue));
+    set_m_textureFolder(m_ini->Get(section, "TextureFolder", sValue));
     set_m_hudPos(m_ini->Get(section, "HudPos", pointValue));
     set_m_hudSize(m_ini->Get(section, "HudSize", pointValue));
     set_m_scalex(m_ini->Get(section, "ScaleX", fValue));

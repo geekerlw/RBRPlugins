@@ -137,7 +137,8 @@ void RBRDashboard::InitDashboard(void) {
   while (iter != m_carSettings.end()) {
     Config::CarSetting* pcurCar = iter->second;
 
-    std::wstring textureFile = StringUtil::string_to_wide_string(Config::PluginFolder) + L"\\" + StringUtil::string_to_wide_string(pcurCar->get_m_textureFile());
+    std::wstring configFolder = StringUtil::string_to_wide_string(Config::PluginFolder) + L"\\" + StringUtil::string_to_wide_string(pcurCar->get_m_textureFolder());
+    std::wstring textureFile = ConfigFolder + L"\\digidash.png";
 
     // load texture for 2d game overlay
     if (m_setting->get_m_showIn2D()) {
@@ -201,10 +202,10 @@ void RBRDashboard::InitDashboard(void) {
 
       // load fonts
       pcurCar->m_spriteBatch = new DX11::SpriteBatch(m_pID3D11DeviceContext);
-      pcurCar->m_timeSpriteFont = new DX11::SpriteFont(m_pID3D11Device, L"Arial.spritefont");
-      pcurCar->m_speedSpriteFont = new DX11::SpriteFont(m_pID3D11Device, L"Arial.spritefont");
-      pcurCar->m_distanceSpriteFont = new DX11::SpriteFont(m_pID3D11Device, L"Arial.spritefont");
-      pcurCar->m_engineSpriteFont = new DX11::SpriteFont(m_pID3D11Device, L"Arial.spritefont");
+      pcurCar->m_timeSpriteFont = new DX11::SpriteFont(m_pID3D11Device, configFolder + L"\\time.spritefont");
+      pcurCar->m_speedSpriteFont = new DX11::SpriteFont(m_pID3D11Device, configFolder + L"\\speed.spritefont");
+      pcurCar->m_distanceSpriteFont = new DX11::SpriteFont(m_pID3D11Device, configFolder + L"\\distance.spritefont");
+      pcurCar->m_engineSpriteFont = new DX11::SpriteFont(m_pID3D11Device, configFolder + L"\\engine.spritefont");
     }
 
     iter++;
