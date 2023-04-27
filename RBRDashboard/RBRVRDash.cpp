@@ -38,7 +38,14 @@ bool RBRVRDash::Init()
 
 	if (bSuccess)
 	{
-		vr::VROverlay()->SetOverlayWidthInMeters(m_ulOverlayHandle, 1.5f);
+		vr::VROverlay()->SetOverlayWidthInMeters(m_ulOverlayHandle, 0.11f);
+		vr::HmdMatrix34_t notificationTransform = {
+			1.0f, 0.0f, 0.0f, 0,
+			0.0f, 1.0f, 0.0f, -0.23f,
+			0.0f, 0.0f, 1.0f, -0.58f,
+		};
+		vr::VROverlay()->SetOverlayTransformAbsolute(m_ulOverlayHandle, vr::TrackingUniverseSeated, &notificationTransform);
+		vr::VROverlay()->ShowOverlay(m_ulOverlayHandle);
 	}
 	return true;
 }

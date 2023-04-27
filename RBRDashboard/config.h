@@ -65,7 +65,7 @@ namespace Config {
     DX11::SpriteFont *m_engineSpriteFont;
 
   public:
-    MEMBER_GET_SET(std::string, m_textureFile);
+    MEMBER_GET_SET(std::string, m_textureFolder);
     MEMBER_GET_SET(POINT, m_hudPos);
     MEMBER_GET_SET(POINT, m_hudSize);
     MEMBER_GET_SET(float, m_scalex);
