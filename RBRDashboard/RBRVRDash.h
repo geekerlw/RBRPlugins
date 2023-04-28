@@ -2,6 +2,7 @@
 
 #include "openvr.h"
 #include "config.h"
+#include "SimpleMath.h"
 
 class RBRVRDash
 {
@@ -11,6 +12,8 @@ public:
 
 	bool Init(void);
 	void Shutdown(void);
+	void ShowOverlay(void);
+	void HideOverlay(void);
 
 	bool IsHMDAvailable(void);
 	vr::HmdError GetLastHmdError(void);
@@ -18,10 +21,12 @@ public:
 public:
 	void HandleVrEvent(void);
 	void SubmitOverlay(const Config::CarSetting *car);
+	void UpdatePose(const Config::CarSetting *car);
 
 private:
 	bool ConnectToVRRuntime(void);
 	void DisconnectFromVRRuntime(void);
+	vr::HmdMatrix34_t MatrixToHmdMatrix34(DirectX::SimpleMath::Matrix &m)
 
 	vr::HmdError m_eLastHmdError;
 

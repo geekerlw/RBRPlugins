@@ -43,6 +43,9 @@ HRESULT __fastcall CustomRBRDirectXEndScene(void* objPointer) {
   if(g_pRBRGameMode->gameMode == 0x01) {
     return ((RBRDashboard *)g_pRBRPlugin)->CustomRBRDirectXEndScene(objPointer);
   }
+  if(g_pRBRGameMode->gameMode == 0x09) {
+    ((RBRDashboard *)g_pRBRPlugin)->m_Vr->HideOverlay();
+  }
 
   return ::Func_OrigRBRDirectXEndScene(objPointer);
 }
@@ -227,11 +230,14 @@ HRESULT RBRDashboard::CustomRBRDirectXStartScene(void* objPointer) {
       std::map<int, Config::CarSetting*>::const_iterator iter;
       if ((iter = m_carSettings.find(g_pRBRGameModeExt->carID)) != m_carSettings.end()) {
         m_curCarSetting = iter->second;
+        m_Vr->UpdatePose(m_curCarSetting);
+        m_Vr->ShowOverlay();
       }
     }
     else {
       if (m_curCarSetting->m_carid != g_pRBRGameModeExt->carID) {
         m_curCarSetting = nullptr; // carid not match, retry next tick.
+        m_Vr->HideOverlay();
       }
     }
   }
