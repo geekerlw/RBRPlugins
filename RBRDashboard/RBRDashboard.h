@@ -12,7 +12,6 @@ class RBRDashboard : public IPlugin {
 private:
   IRBRGame* m_pGame; 
   RBRVRDash* m_Vr;
-  INIUtil::INIManager* m_ini;
   Config::CarSetting* m_curCarSetting;
   float m_scalex, m_scaley;
   Config::Setting *m_setting;

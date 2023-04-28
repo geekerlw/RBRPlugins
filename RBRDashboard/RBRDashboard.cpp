@@ -49,7 +49,6 @@ HRESULT __fastcall CustomRBRDirectXEndScene(void* objPointer) {
 
 RBRDashboard::RBRDashboard(IRBRGame* pGame) : m_pGame(pGame) {
   m_curCarSetting = nullptr;
-  m_ini = nullptr;
   m_setting = nullptr;
   m_scalex = m_scaley = 1.0f;
   m_pID3D11Device = nullptr;
@@ -72,14 +71,13 @@ RBRDashboard::RBRDashboard(IRBRGame* pGame) : m_pGame(pGame) {
 RBRDashboard::~RBRDashboard(void) {
   LogUtil::ToFile("Destroying Plugin " + Config::PluginName + ".");
 
-  if (m_setting->get_m_showInVr() && m_Vr->IsHMDAvailable()) {
+  if (m_setting->get_m_pluginOn() && m_setting->get_m_showInVr() && m_Vr->IsHMDAvailable()) {
     m_Vr->Shutdown();
   }
   
   SAFE_RELEASE(m_pID3D11DeviceContext);
   SAFE_RELEASE(m_pID3D11Device);
   SAFE_DELETE(m_Vr);
-  SAFE_DELETE(m_ini);
   SAFE_DELETE(m_setting);
   std::map<int, Config::CarSetting*>::iterator iter = m_carSettings.begin();
   while (iter != m_carSettings.end()) {
@@ -94,7 +92,7 @@ const char* RBRDashboard::GetName(void) {
     // Do the initialization and texture creation only once because RBR may call GetName several times
     LogUtil::ToFile("Initializing the plugin");
 
-    if (!m_setting->get_m_showIn2D() && !m_setting->get_m_showInVr()) {
+    if (!m_setting->get_m_enableShow()) {
       return Config::PluginName.c_str(); // plugin func not enabled, just return.
     }
 
@@ -115,11 +113,11 @@ const char* RBRDashboard::GetName(void) {
 }
 
 void RBRDashboard::LoadINI(void) {
-  m_ini = new INIUtil::INIManager(Config::PluginConfig);
-  m_setting = new Config::Setting(m_ini);
+  m_setting = new Config::Setting(Config::PluginConfig);
   for (int i = 0; i < 8; i++) {
-    if (m_ini->IsSectionExist("car" + std::to_string(i))) {
-      Config::CarSetting *carSetting = new Config::CarSetting(m_ini, i);
+    if (m_setting->IsCarConfigExist(i)) {
+      std::string configFile = Config::PluginFolder + "\\" + m_setting->GetCarConfigFolder(i) + "\\config.ini";
+      Config::CarSetting *carSetting = new Config::CarSetting(i, configFile);
       m_carSettings[i] = carSetting;
     }
   }

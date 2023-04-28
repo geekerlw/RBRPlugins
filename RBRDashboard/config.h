@@ -31,13 +31,21 @@ namespace Config {
   private:
     INIUtil::INIManager *m_ini;
   public:
+    MEMBER_GET_SET(bool, m_pluginOn);
     MEMBER_GET_SET(bool, m_showIn2D);
     MEMBER_GET_SET(bool, m_showInVr);
   public:
-    Setting(INIUtil::INIManager* ini) : m_ini(ini) { LoadConfig(); }
-    virtual ~Setting(void) { m_ini = nullptr; }
+    Setting(std::string &filePath) {
+      m_ini = new INIUtil::INIManager(filePath);
+      LoadConfig();
+    }
+    virtual ~Setting(void) { SAFE_DELETE(m_ini); }
 
     void LoadConfig(void);
+
+    bool IsCarConfigExist(const int carId);
+
+    std::string GetCarConfigFolder(const int carId);
   };
 
   class CarSetting {
@@ -65,11 +73,18 @@ namespace Config {
     DX11::SpriteFont *m_engineSpriteFont;
 
   public:
-    MEMBER_GET_SET(std::string, m_textureFolder);
+    // display
     MEMBER_GET_SET(POINT, m_hudPos);
     MEMBER_GET_SET(POINT, m_hudSize);
-    MEMBER_GET_SET(float, m_scalex);
-    MEMBER_GET_SET(float, m_scaley);
+
+    // vr position
+    MEMBER_GET_SET(float, m_vrPositionX);
+    MEMBER_GET_SET(float, m_vrPositionY);
+    MEMBER_GET_SET(float, m_vrPositionZ);
+    MEMBER_GET_SET(float, m_vrRotationX);
+    MEMBER_GET_SET(float, m_vrRotationY);
+    MEMBER_GET_SET(float, m_vrRotationZ);
+    MEMBER_GET_SET(float, m_vrScale);
 
     // background
     MEMBER_GET_SET(bool, m_backgroudShow);
@@ -112,7 +127,8 @@ namespace Config {
     MEMBER_GET_SET(POINT, m_engineTempPos);
 
   public:
-    CarSetting(INIUtil::INIManager *ini, int carid) : m_ini(ini), m_carid(carid) {
+    CarSetting(int carid, std::string &filePath) : m_carid(carid) {
+      m_ini = new INIUtil::INIManager(filePath);
       m_metatex = new IMAGE_TEXTURE();
       m_dashtex = new IMAGE_TEXTURE();
       m_timeFont = m_speedFont = m_distanceFont = m_engineFont = nullptr;
@@ -126,7 +142,7 @@ namespace Config {
       LoadConfig();
     }
     virtual ~CarSetting(void) {
-      m_ini = nullptr;
+      SAFE_DELETE(m_ini);
       SAFE_RELEASE(m_metatex->pTexture);
       SAFE_RELEASE(m_dashtex->pTexture);
       SAFE_RELEASE(m_pD3D11ShaderResourceView);
