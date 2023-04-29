@@ -14,6 +14,7 @@ class RBRDashboard : public IPlugin {
 private:
   IRBRGame* m_pGame; 
   RBRVRDash* m_Vr;
+  unsigned int m_tickTime;
   Config::CarSetting* m_curCarSetting;
   float m_scalex, m_scaley;
   Config::Setting *m_setting;

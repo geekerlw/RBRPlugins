@@ -7,8 +7,9 @@ void Setting::LoadConfig(void) {
         return;
 
     bool bValue = false;
-
+    int iValue = 1;
     set_m_pluginOn(m_ini->Get("setting", "PluginOn", bValue));
+    set_m_frameRatio(m_ini->Get("setting", "FrameRatio", iValue));
 }
 
 bool Setting::IsCarConfigExist(const int carId) {

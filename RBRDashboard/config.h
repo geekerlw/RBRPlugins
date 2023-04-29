@@ -32,6 +32,7 @@ namespace Config {
     INIUtil::INIManager *m_ini;
   public:
     MEMBER_GET_SET(bool, m_pluginOn);
+    MEMBER_GET_SET(int, m_frameRatio);
   public:
     Setting(std::string filePath) {
       m_ini = new INIUtil::INIManager(filePath);
