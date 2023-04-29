@@ -43,9 +43,6 @@ HRESULT __fastcall CustomRBRDirectXEndScene(void* objPointer) {
   if(g_pRBRGameMode->gameMode == 0x01) {
     return ((RBRDashboard *)g_pRBRPlugin)->CustomRBRDirectXEndScene(objPointer);
   }
-  if(g_pRBRGameMode->gameMode == 0x09) {
-    ((RBRDashboard *)g_pRBRPlugin)->DisableVROverlay();
-  }
 
   return ::Func_OrigRBRDirectXEndScene(objPointer);
 }
@@ -249,7 +246,6 @@ HRESULT RBRDashboard::CustomRBRDirectXStartScene(void* objPointer) {
     else {
       if (m_curCarSetting->m_carid != g_pRBRGameModeExt->carID) {
         m_curCarSetting = nullptr; // carid not match, retry next tick.
-        //m_Vr->HideOverlay();
       }
     }
   }
@@ -318,6 +314,7 @@ void RBRDashboard::DrawDashboard(void) {
   }
   else {
     LogUtil::ToFile("Failed creating vertexes.");
+    return;
   }
 
   if (m_curCarSetting->get_m_timeShow()) {
@@ -365,18 +362,18 @@ void RBRDashboard::DrawVROverlay(void) {
   ID3D11Texture2D *metaTexture = m_curCarSetting->m_pD3D11TextureMeta;
   ID3D11Texture2D *dashTexture = m_curCarSetting->m_pD3D11TextureDash;
 
-  //// Create the render target view
-  //ID3D11RenderTargetView* renderTargetView;
-  //D3D11_TEXTURE2D_DESC desc = {};
-  //dashTexture->GetDesc(&desc);
-  //D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc = {};
-  //renderTargetViewDesc.Format = desc.Format;
-  //renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-  //HRESULT hr = m_pID3D11Device->CreateRenderTargetView(dashTexture, &renderTargetViewDesc, &renderTargetView);
-  //if (FAILED(hr)) {
-  //  LogUtil::ToFile("steven: failed to create render target");
-  //  return;
-  //}
+  // Create the render target view
+  ID3D11RenderTargetView* renderTargetView;
+  D3D11_TEXTURE2D_DESC desc = {};
+  dashTexture->GetDesc(&desc);
+  D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc = {};
+  renderTargetViewDesc.Format = desc.Format;
+  renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+  HRESULT hr = m_pID3D11Device->CreateRenderTargetView(dashTexture, &renderTargetViewDesc, &renderTargetView);
+  if (FAILED(hr)) {
+    LogUtil::ToFile("Failed to create render target");
+    return;
+  }
 
   // Define the viewport dimensions
   D3D11_VIEWPORT viewport;
@@ -387,11 +384,11 @@ void RBRDashboard::DrawVROverlay(void) {
   viewport.MinDepth = 0.0f;
   viewport.MaxDepth = 1.0f;
 
-  //// Set the viewport on the device context
-  //m_pID3D11DeviceContext->RSSetViewports(1, &viewport);
+  // Set the viewport on the device context
+  m_pID3D11DeviceContext->RSSetViewports(1, &viewport);
 
-  //// Set the render target
-  //m_pID3D11DeviceContext->OMSetRenderTargets(0, &renderTargetView, NULL);
+  // Set the render target
+  m_pID3D11DeviceContext->OMSetRenderTargets(1, &renderTargetView, NULL);
 
   m_curCarSetting->m_spriteBatch->SetViewport(viewport);
 
@@ -423,39 +420,39 @@ void RBRDashboard::DrawVROverlay(void) {
     }
   }
 
-  //m_curCarSetting->m_spriteBatch->Begin();
+  m_curCarSetting->m_spriteBatch->Begin();
 
-  //if (m_curCarSetting->get_m_timeShow()) {
-  //  std::string timestr = GetSecondsAsMISSMS(g_pRBRCarInfo->raceTime);
-  //  XMFLOAT2 textpos((float)m_curCarSetting->get_m_timeTextPos().x, (float)m_curCarSetting->get_m_timeTextPos().y);
-  //  m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, timestr.c_str(), textpos, DirectX::Colors::White);
-  //}
+  if (m_curCarSetting->get_m_timeShow()) {
+    std::string timestr = GetSecondsAsMISSMS(g_pRBRCarInfo->raceTime);
+    XMFLOAT2 textpos((float)m_curCarSetting->get_m_timeTextPos().x, (float)m_curCarSetting->get_m_timeTextPos().y);
+    m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, timestr.c_str(), textpos, DirectX::Colors::White);
+  }
 
-  //if (m_curCarSetting->get_m_speedShow()) {
-  //  char speedstr[16];
-  //  snprintf(speedstr, sizeof(speedstr), "%0.2f KM/h", g_pRBRCarInfo->speed);
-  //  XMFLOAT2 textpos((float)m_curCarSetting->get_m_speedTextPos().x, (float)m_curCarSetting->get_m_speedTextPos().y);
-  //  m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, speedstr, textpos, DirectX::Colors::White);
-  //}
+  if (m_curCarSetting->get_m_speedShow()) {
+    char speedstr[16];
+    snprintf(speedstr, sizeof(speedstr), "%0.2f KM/h", g_pRBRCarInfo->speed);
+    XMFLOAT2 textpos((float)m_curCarSetting->get_m_speedTextPos().x, (float)m_curCarSetting->get_m_speedTextPos().y);
+    m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, speedstr, textpos, DirectX::Colors::White);
+  }
 
-  //if (m_curCarSetting->get_m_distanceShow()) {
-  //  char distancestr[16];
-  //  snprintf(distancestr, sizeof(distancestr), "%0.2f KM", g_pRBRCarInfo->distanceFromStartControl);
-  //  XMFLOAT2 textpos((float)m_curCarSetting->get_m_distancePos0().x, (float)m_curCarSetting->get_m_distancePos0().y);
-  //  m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, distancestr, textpos, DirectX::Colors::White);
-  //  snprintf(distancestr, sizeof(distancestr), "%0.2f KM", g_pRBRCarInfo->distanceToFinish);
-  //  textpos = XMFLOAT2((float)m_curCarSetting->get_m_distancePos1().x, (float)m_curCarSetting->get_m_distancePos1().y);
-  //  m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, distancestr, textpos, DirectX::Colors::White);
-  //}
+  if (m_curCarSetting->get_m_distanceShow()) {
+    char distancestr[16];
+    snprintf(distancestr, sizeof(distancestr), "%0.2f KM", g_pRBRCarInfo->distanceFromStartControl);
+    XMFLOAT2 textpos((float)m_curCarSetting->get_m_distancePos0().x, (float)m_curCarSetting->get_m_distancePos0().y);
+    m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, distancestr, textpos, DirectX::Colors::White);
+    snprintf(distancestr, sizeof(distancestr), "%0.2f KM", g_pRBRCarInfo->distanceToFinish);
+    textpos = XMFLOAT2((float)m_curCarSetting->get_m_distancePos1().x, (float)m_curCarSetting->get_m_distancePos1().y);
+    m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, distancestr, textpos, DirectX::Colors::White);
+  }
 
-  //if (m_curCarSetting->get_m_engineTempShow()) {
-  //  char engineTempstr[16];
-  //  snprintf(engineTempstr, sizeof(engineTempstr), "%02d", (int)g_pRBRCarInfo->temp);
-  //  XMFLOAT2 textpos((float)m_curCarSetting->get_m_engineTempPos().x, (float)m_curCarSetting->get_m_engineTempPos().y);
-  //  m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, engineTempstr, textpos, DirectX::Colors::White);
-  //}
+  if (m_curCarSetting->get_m_engineTempShow()) {
+    char engineTempstr[16];
+    snprintf(engineTempstr, sizeof(engineTempstr), "%02d", (int)g_pRBRCarInfo->temp);
+    XMFLOAT2 textpos((float)m_curCarSetting->get_m_engineTempPos().x, (float)m_curCarSetting->get_m_engineTempPos().y);
+    m_curCarSetting->m_timeSpriteFont->DrawString(m_curCarSetting->m_spriteBatch, engineTempstr, textpos, DirectX::Colors::White);
+  }
 
-  //m_curCarSetting->m_spriteBatch->End();
+  m_curCarSetting->m_spriteBatch->End();
 
   m_Vr->SubmitOverlay(m_curCarSetting);
 }

@@ -20,7 +20,7 @@ public:
 
 public:
 	void HandleVrEvent(void);
-	void SubmitOverlay(Config::CarSetting *car);
+	void SubmitOverlay(const Config::CarSetting *car);
 	void UpdatePose(Config::CarSetting *car);
 
 private:
