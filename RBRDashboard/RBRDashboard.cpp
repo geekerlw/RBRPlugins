@@ -257,8 +257,8 @@ void RBRDashboard::EnableVROverlay(Config::CarSetting *car) {
   D3D11_VIEWPORT viewport;
   viewport.TopLeftX = 0;
   viewport.TopLeftY = 0;
-  viewport.Width = car->get_m_hudSize().x;
-  viewport.Height = car->get_m_hudSize().y;
+  viewport.Width = (float)car->get_m_hudSize().x;
+  viewport.Height = (float)car->get_m_hudSize().y;
   viewport.MinDepth = 0.0f;
   viewport.MaxDepth = 1.0f;
 
