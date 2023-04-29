@@ -7,6 +7,8 @@
 #include "Utils/INIUtil.h"
 #include "config.h"
 #include "RBRVRDash.h"
+#include "openvr.h"
+#include "SimpleMath.h"
 
 class RBRDashboard : public IPlugin {
 private:
@@ -18,6 +20,23 @@ private:
   std::map<int, Config::CarSetting*> m_carSettings;
   ID3D11Device* m_pID3D11Device;
 	ID3D11DeviceContext* m_pID3D11DeviceContext;
+
+  // 2d game overlay needed
+  PIMAGE_TEXTURE m_metatex;
+  PIMAGE_TEXTURE m_dashtex;
+  CD3DFont* m_timeFont;
+  CD3DFont* m_speedFont;
+  CD3DFont* m_distanceFont;
+  CD3DFont* m_engineFont;
+
+  // vr game overlay needed
+  ID3D11Texture2D* m_pD3D11TextureMeta, * m_pD3D11TextureDash;
+  ID3D11ShaderResourceView* m_pD3D11ShaderResourceView;
+  DX11::SpriteBatch* m_spriteBatch;
+  DX11::SpriteFont* m_timeSpriteFont;
+  DX11::SpriteFont* m_speedSpriteFont;
+  DX11::SpriteFont* m_distanceSpriteFont;
+  DX11::SpriteFont* m_engineSpriteFont;
 
 public:
   RBRDashboard(IRBRGame* pGame);
@@ -59,12 +78,19 @@ public:
     // Do nothing
   }
 
-  HRESULT CustomRBRDirectXStartScene(void* objPointer);
+  HRESULT CustomRBRDirectXStartSceneBeforeStart(void* objPointer);
   
-  HRESULT CustomRBRDirectXEndScene(void* objPointer);
+  HRESULT CustomRBRDirectXEndSceneDriving(void* objPointer);
+
+  HRESULT CustomRBRDirectXEndSceneBackMenu(void* objPointer);
 
 public:
-  void EnableVROverlay(void);
+  void EnableDashboard(Config::CarSetting* car);
+
+  void DisableDashboard(void);
+
+  void EnableVROverlay(Config::CarSetting* car);
+
   void DisableVROverlay(void);
 
 private:
@@ -77,4 +103,8 @@ private:
   void DrawDashboard(void);
 
   void DrawVROverlay(void);
+
+  bool IsHMDAvailable(void);
+
+  vr::HmdMatrix34_t MatrixToHmdMatrix34(DirectX::SimpleMath::Matrix& m);
 };

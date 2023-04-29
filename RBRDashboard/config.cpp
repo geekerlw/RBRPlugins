@@ -9,8 +9,6 @@ void Setting::LoadConfig(void) {
     bool bValue = false;
 
     set_m_pluginOn(m_ini->Get("setting", "PluginOn", bValue));
-    set_m_showIn2D(m_ini->Get("setting", "ShowIn2D", bValue));
-    set_m_showInVr(m_ini->Get("setting", "ShowInVr", bValue));
 }
 
 bool Setting::IsCarConfigExist(const int carId) {

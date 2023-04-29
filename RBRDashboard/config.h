@@ -32,8 +32,6 @@ namespace Config {
     INIUtil::INIManager *m_ini;
   public:
     MEMBER_GET_SET(bool, m_pluginOn);
-    MEMBER_GET_SET(bool, m_showIn2D);
-    MEMBER_GET_SET(bool, m_showInVr);
   public:
     Setting(std::string filePath) {
       m_ini = new INIUtil::INIManager(filePath);
@@ -54,23 +52,6 @@ namespace Config {
 
   public:
     int m_carid;
-    
-    // 2d game overlay needed
-    PIMAGE_TEXTURE m_metatex;
-    PIMAGE_TEXTURE m_dashtex;
-    CD3DFont* m_timeFont;
-    CD3DFont* m_speedFont;
-    CD3DFont* m_distanceFont;
-    CD3DFont* m_engineFont;
-
-    // vr game overlay needed
-    ID3D11Texture2D *m_pD3D11TextureMeta, * m_pD3D11TextureDash;
-    ID3D11ShaderResourceView *m_pD3D11ShaderResourceView;
-    DX11::SpriteBatch *m_spriteBatch;
-    DX11::SpriteFont *m_timeSpriteFont;
-    DX11::SpriteFont *m_speedSpriteFont;
-    DX11::SpriteFont *m_distanceSpriteFont;
-    DX11::SpriteFont *m_engineSpriteFont;
 
   public:
     // display
@@ -130,36 +111,14 @@ namespace Config {
   public:
     CarSetting(int carid, std::string filePath) : m_carid(carid) {
       m_ini = new INIUtil::INIManager(filePath);
-      m_metatex = new IMAGE_TEXTURE();
-      m_dashtex = new IMAGE_TEXTURE();
-      m_timeFont = m_speedFont = m_distanceFont = m_engineFont = nullptr;
       m_gearSrc = new RECT[MAX_GEAR_NUM]();
       m_gearDst = new RECT[MAX_GEAR_NUM]();
       m_rpmSrc = new RECT[MAX_RPM_NUM]();
       m_rpmDst = new RECT[MAX_RPM_NUM]();
-      m_pD3D11TextureMeta = nullptr;
-      m_pD3D11TextureDash = nullptr;
-      m_pD3D11ShaderResourceView = nullptr;
       LoadConfig();
     }
     virtual ~CarSetting(void) {
       SAFE_DELETE(m_ini);
-      SAFE_RELEASE(m_metatex->pTexture);
-      SAFE_RELEASE(m_dashtex->pTexture);
-      SAFE_RELEASE(m_pD3D11ShaderResourceView);
-      SAFE_RELEASE(m_pD3D11TextureMeta);
-      SAFE_RELEASE(m_pD3D11TextureDash);
-      SAFE_DELETE(m_metatex);
-      SAFE_DELETE(m_dashtex);
-      SAFE_DELETE(m_timeFont);
-      SAFE_DELETE(m_speedFont);
-      SAFE_DELETE(m_distanceFont);
-      SAFE_DELETE(m_engineFont);
-      SAFE_DELETE(m_spriteBatch);
-      SAFE_DELETE(m_timeSpriteFont);
-      SAFE_DELETE(m_speedSpriteFont);
-      SAFE_DELETE(m_distanceFont);
-      SAFE_DELETE(m_engineFont);
       delete []m_gearSrc;
       delete []m_gearDst;
       delete []m_rpmSrc;
