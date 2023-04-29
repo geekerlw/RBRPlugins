@@ -40,14 +40,14 @@ bool RBRVRDash::Init()
 
 	if (bSuccess)
 	{
-		vr::VROverlay()->SetOverlayWidthInMeters(m_ulOverlayHandle, 1.0f);
+		vr::VROverlay()->SetOverlayWidthInMeters(m_ulOverlayHandle, 1.5f);
 		vr::HmdMatrix34_t transform = {
 			1.0f, 0.0f, 0.0f, 0,
 			0.0f, 1.0f, 0.0f, 0,
-			0.0f, 0.0f, 1.0f, -1.0f,
+			0.0f, 0.0f, 1.0f, -1.28f,
 		};
 		vr::VROverlay()->SetOverlayTransformAbsolute(m_ulOverlayHandle, vr::TrackingUniverseSeated, &transform);
-		vr::VROverlay()->HideOverlay(m_ulOverlayHandle);
+		vr::VROverlay()->ShowOverlay(m_ulOverlayHandle);
 	}
 	return true;
 }
@@ -111,7 +111,7 @@ void RBRVRDash::HandleVrEvent()
 	}
 }
 
-void RBRVRDash::SubmitOverlay(const Config::CarSetting* car)
+void RBRVRDash::SubmitOverlay(Config::CarSetting* car)
 {
 	if (!vr::VRSystem())
 		return;
@@ -125,27 +125,24 @@ void RBRVRDash::SubmitOverlay(const Config::CarSetting* car)
 
 vr::HmdMatrix34_t RBRVRDash::MatrixToHmdMatrix34(Matrix &m)
 {
-	HmdMatrix34_t pose = new HmdMatrix34_t
-	{
-		m0 = m[0, 0],
-		m1 = m[0, 1],
-		m2 = m[0, 2],
-		m3 = m[0, 3],
+	HmdMatrix34_t pose;
+	pose.m[0][0] = m._11;
+	pose.m[0][1] = m._12;
+	pose.m[0][2] = m._13;
+	pose.m[0][3] = m._14;
+	pose.m[1][0] = m._21;
+	pose.m[1][1] = m._22;
+	pose.m[1][2] = m._23;
+	pose.m[1][3] = m._24;
+	pose.m[2][0] = m._31;
+	pose.m[2][1] = m._32;
+	pose.m[2][2] = m._33;
+	pose.m[2][3] = m._34;
 
-		m4 = m[1, 0],
-		m5 = m[1, 1],
-		m6 = m[1, 2],
-		m7 = m[1, 3],
-
-		m8 = m[2, 0],
-		m9 = m[2, 1],
-		m10 = m[2, 2],
-		m11 = m[2, 3]
-	};
 	return pose;
 }
 
-void RBRVRDash::UpdatePose(const Config::CarSetting* car)
+void RBRVRDash::UpdatePose(Config::CarSetting* car)
 {	
 	if (!vr::VRSystem())
 		return;
@@ -155,8 +152,9 @@ void RBRVRDash::UpdatePose(const Config::CarSetting* car)
 	matrix *= Matrix::CreateRotationX(car->get_m_vrRotationX());
 	matrix *= Matrix::CreateRotationY(car->get_m_vrRotationY());
 	matrix *= Matrix::CreateRotationZ(car->get_m_vrRotationZ());
-	matrix *= Matrix::CreateScale(car->get_m_vrScale);
+	matrix *= Matrix::CreateScale(car->get_m_vrScale());
+	matrix = matrix.Transpose();
 
-	vr::HmdMatrix34_t transform = MatrixToHmdMatrix34(matrix.Transform());
+	vr::HmdMatrix34_t transform = MatrixToHmdMatrix34(matrix);
 	vr::VROverlay()->SetOverlayTransformAbsolute(m_ulOverlayHandle, vr::TrackingUniverseSeated, &transform);
 }

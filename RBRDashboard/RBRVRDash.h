@@ -20,13 +20,13 @@ public:
 
 public:
 	void HandleVrEvent(void);
-	void SubmitOverlay(const Config::CarSetting *car);
-	void UpdatePose(const Config::CarSetting *car);
+	void SubmitOverlay(Config::CarSetting *car);
+	void UpdatePose(Config::CarSetting *car);
 
 private:
 	bool ConnectToVRRuntime(void);
 	void DisconnectFromVRRuntime(void);
-	vr::HmdMatrix34_t MatrixToHmdMatrix34(DirectX::SimpleMath::Matrix &m)
+	vr::HmdMatrix34_t MatrixToHmdMatrix34(DirectX::SimpleMath::Matrix& m);
 
 	vr::HmdError m_eLastHmdError;
 

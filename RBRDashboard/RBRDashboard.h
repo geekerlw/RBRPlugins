@@ -63,6 +63,10 @@ public:
   
   HRESULT CustomRBRDirectXEndScene(void* objPointer);
 
+public:
+  void EnableVROverlay(void);
+  void DisableVROverlay(void);
+
 private:
   void LoadINI(void);
 

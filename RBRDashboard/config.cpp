@@ -13,7 +13,7 @@ void Setting::LoadConfig(void) {
     set_m_showInVr(m_ini->Get("setting", "ShowInVr", bValue));
 }
 
-void Setting::IsCarConfigExist(const int carId) {
+bool Setting::IsCarConfigExist(const int carId) {
     return m_ini ? m_ini->IsSectionExist("car" + std::to_string(carId)) : false;
 }
 
@@ -36,6 +36,7 @@ void CarSetting::LoadConfig(void) {
     // display
     set_m_hudPos(m_ini->Get("display", "HudPos", pointValue));
     set_m_hudSize(m_ini->Get("display", "HudSize", pointValue));
+    set_m_scale(m_ini->Get("display", "Scale", fValue));
 
     // vr position
     set_m_vrPositionX(m_ini->Get("vr", "PositionX", fValue));

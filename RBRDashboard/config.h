@@ -35,7 +35,7 @@ namespace Config {
     MEMBER_GET_SET(bool, m_showIn2D);
     MEMBER_GET_SET(bool, m_showInVr);
   public:
-    Setting(std::string &filePath) {
+    Setting(std::string filePath) {
       m_ini = new INIUtil::INIManager(filePath);
       LoadConfig();
     }
@@ -76,6 +76,7 @@ namespace Config {
     // display
     MEMBER_GET_SET(POINT, m_hudPos);
     MEMBER_GET_SET(POINT, m_hudSize);
+    MEMBER_GET_SET(float, m_scale);
 
     // vr position
     MEMBER_GET_SET(float, m_vrPositionX);
@@ -127,7 +128,7 @@ namespace Config {
     MEMBER_GET_SET(POINT, m_engineTempPos);
 
   public:
-    CarSetting(int carid, std::string &filePath) : m_carid(carid) {
+    CarSetting(int carid, std::string filePath) : m_carid(carid) {
       m_ini = new INIUtil::INIManager(filePath);
       m_metatex = new IMAGE_TEXTURE();
       m_dashtex = new IMAGE_TEXTURE();

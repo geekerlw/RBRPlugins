@@ -30,7 +30,8 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -76,13 +77,19 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;RBRDASHBOARD_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>.\Thirdparty\openvr\headers;.\Thirdparty\DirectXTK\Inc;.\Thirdparty\DirectXTK\Src\Shaders\Compiled;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>.\Thirdparty\openvr\lib\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>.\Thirdparty\openvr\lib\win32\openvr_api.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>RBRDashboard.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -98,8 +105,8 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>.\Thirdparty\openvr\headers;.\Thirdparty\DirectXTK\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalIncludeDirectories>.\Thirdparty\openvr\headers;.\Thirdparty\DirectXTK\Inc;.\Thirdparty\DirectXTK\Src\Shaders\Compiled;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -109,7 +116,7 @@
       <EnableUAC>false</EnableUAC>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <ModuleDefinitionFile>RBRDashboard.def</ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>.\Thirdparty\openvr\bin\win32;.\Thirdparty\openvr\lib\win32;.\Thirdparty\DirectXTK;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\Thirdparty\openvr\bin\win32;.\Thirdparty\openvr\lib\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>.\Thirdparty\openvr\lib\win32\openvr_api.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -161,6 +168,15 @@
     <ClCompile Include="RBR\D3D9Font\SharedFont.cpp" />
     <ClCompile Include="RBR\D3D9Helpers.cpp" />
     <ClCompile Include="RBR\RBRAPI.cpp" />
+    <ClCompile Include="Thirdparty\DirectXTK\Src\BinaryReader.cpp" />
+    <ClCompile Include="Thirdparty\DirectXTK\Src\BufferHelpers.cpp" />
+    <ClCompile Include="Thirdparty\DirectXTK\Src\CommonStates.cpp" />
+    <ClCompile Include="Thirdparty\DirectXTK\Src\DirectXHelpers.cpp" />
+    <ClCompile Include="Thirdparty\DirectXTK\Src\SimpleMath.cpp" />
+    <ClCompile Include="Thirdparty\DirectXTK\Src\SpriteBatch.cpp" />
+    <ClCompile Include="Thirdparty\DirectXTK\Src\SpriteFont.cpp" />
+    <ClCompile Include="Thirdparty\DirectXTK\Src\VertexTypes.cpp" />
+    <ClCompile Include="Thirdparty\DirectXTK\Src\WICTextureLoader.cpp" />
     <ClCompile Include="Utils\D3DUtil.cpp" />
     <ClCompile Include="Utils\INIUtil.cpp" />
     <ClCompile Include="Utils\LogUtil.cpp" />
@@ -168,8 +184,15 @@
     <ClCompile Include="RBRVRDash.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Texture\ford-wrc-2019\config.ini" />
+    <None Include="..\Texture\ford-wrc-2019\distance.spritefont" />
+    <None Include="..\Texture\ford-wrc-2019\engine.spritefont" />
+    <None Include="..\Texture\ford-wrc-2019\ford-wrc-2019.psd" />
+    <None Include="..\Texture\ford-wrc-2019\speed.spritefont" />
+    <None Include="..\Texture\ford-wrc-2019\time.spritefont" />
+    <None Include="..\Texture\RBRDashboard.ini" />
     <None Include="RBRDashboard.def" />
-    <None Include="RBRDashboard.ini" />
+    <None Include="Thirdparty\openvr\bin\win32\openvr_api.dll" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h" />
@@ -184,6 +207,7 @@
     <ClInclude Include="RBR\RBR.h" />
     <ClInclude Include="RBR\RBRAPI.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Thirdparty\DirectXTK\Inc\SimpleMath.h" />
     <ClInclude Include="Thirdparty\DirectXTK\Inc\SpriteBatch.h" />
     <ClInclude Include="Thirdparty\DirectXTK\Inc\SpriteFont.h" />
     <ClInclude Include="Thirdparty\DirectXTK\Inc\WICTextureLoader.h" />
@@ -199,8 +223,10 @@
   <ItemGroup>
     <Library Include="Lib\Detourxs\LDE64.lib" />
     <Library Include="Lib\Detourxs\LDE64x64.lib" />
-    <Library Include="Thirdparty\DirectXTK\DirectXTK.lib" />
     <Library Include="Thirdparty\openvr\lib\win32\openvr_api.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Texture\ford-wrc-2019\digidash.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -44,7 +44,7 @@ HRESULT __fastcall CustomRBRDirectXEndScene(void* objPointer) {
     return ((RBRDashboard *)g_pRBRPlugin)->CustomRBRDirectXEndScene(objPointer);
   }
   if(g_pRBRGameMode->gameMode == 0x09) {
-    ((RBRDashboard *)g_pRBRPlugin)->m_Vr->HideOverlay();
+    ((RBRDashboard *)g_pRBRPlugin)->DisableVROverlay();
   }
 
   return ::Func_OrigRBRDirectXEndScene(objPointer);
@@ -95,7 +95,7 @@ const char* RBRDashboard::GetName(void) {
     // Do the initialization and texture creation only once because RBR may call GetName several times
     LogUtil::ToFile("Initializing the plugin");
 
-    if (!m_setting->get_m_enableShow()) {
+    if (!m_setting->get_m_pluginOn()) {
       return Config::PluginName.c_str(); // plugin func not enabled, just return.
     }
 
@@ -138,7 +138,7 @@ void RBRDashboard::InitDashboard(void) {
   while (iter != m_carSettings.end()) {
     Config::CarSetting* pcurCar = iter->second;
 
-    std::wstring configFolder = StringUtil::string_to_wide_string(Config::PluginFolder) + L"\\" + StringUtil::string_to_wide_string(pcurCar->get_m_textureFolder());
+    std::wstring configFolder = StringUtil::string_to_wide_string(Config::PluginFolder) + L"\\" + StringUtil::string_to_wide_string(m_setting->GetCarConfigFolder(iter->first));
     std::wstring textureFile = configFolder + L"\\digidash.png";
 
     // load texture for 2d game overlay
@@ -202,11 +202,11 @@ void RBRDashboard::InitDashboard(void) {
       }
 
       // load fonts
-      //pcurCar->m_spriteBatch = new DX11::SpriteBatch(m_pID3D11DeviceContext);
-      //pcurCar->m_timeSpriteFont = new DX11::SpriteFont(m_pID3D11Device, (configFolder + L"\\time.spritefont").c_str());
-      //pcurCar->m_speedSpriteFont = new DX11::SpriteFont(m_pID3D11Device, (configFolder + L"\\speed.spritefont").c_str());
-      //pcurCar->m_distanceSpriteFont = new DX11::SpriteFont(m_pID3D11Device, (configFolder + L"\\distance.spritefont").c_str());
-      //pcurCar->m_engineSpriteFont = new DX11::SpriteFont(m_pID3D11Device, (configFolder + L"\\engine.spritefont").c_str());
+      pcurCar->m_spriteBatch = new DX11::SpriteBatch(m_pID3D11DeviceContext);
+      pcurCar->m_timeSpriteFont = new DX11::SpriteFont(m_pID3D11Device, (configFolder + L"\\time.spritefont").c_str());
+      pcurCar->m_speedSpriteFont = new DX11::SpriteFont(m_pID3D11Device, (configFolder + L"\\speed.spritefont").c_str());
+      pcurCar->m_distanceSpriteFont = new DX11::SpriteFont(m_pID3D11Device, (configFolder + L"\\distance.spritefont").c_str());
+      pcurCar->m_engineSpriteFont = new DX11::SpriteFont(m_pID3D11Device, (configFolder + L"\\engine.spritefont").c_str());
     }
 
     iter++;
@@ -221,6 +221,18 @@ void RBRDashboard::InitVrSystem(void) {
   }
 }
 
+void RBRDashboard::EnableVROverlay(void) {
+  if (m_Vr) {
+    m_Vr->ShowOverlay();
+  }
+}
+
+void RBRDashboard::DisableVROverlay(void) {
+  if (m_Vr) {
+    m_Vr->HideOverlay();
+  }
+}
+
 HRESULT RBRDashboard::CustomRBRDirectXStartScene(void* objPointer) {
   HRESULT hResult = Func_OrigRBRDirectXStartScene(objPointer);
 
@@ -230,14 +242,14 @@ HRESULT RBRDashboard::CustomRBRDirectXStartScene(void* objPointer) {
       std::map<int, Config::CarSetting*>::const_iterator iter;
       if ((iter = m_carSettings.find(g_pRBRGameModeExt->carID)) != m_carSettings.end()) {
         m_curCarSetting = iter->second;
-        m_Vr->UpdatePose(m_curCarSetting);
-        m_Vr->ShowOverlay();
+        //m_Vr->UpdatePose(m_curCarSetting);
+        //m_Vr->ShowOverlay();
       }
     }
     else {
       if (m_curCarSetting->m_carid != g_pRBRGameModeExt->carID) {
         m_curCarSetting = nullptr; // carid not match, retry next tick.
-        m_Vr->HideOverlay();
+        //m_Vr->HideOverlay();
       }
     }
   }
@@ -336,8 +348,8 @@ void RBRDashboard::DrawDashboard(void) {
   g_pRBRIDirect3DDevice9->SetRenderTarget(0, originRenterTarget);
 
   dst = { m_curCarSetting->get_m_hudPos().x, m_curCarSetting->get_m_hudPos().y,
-    (long)(m_curCarSetting->get_m_hudSize().x * m_curCarSetting->get_m_scalex() * m_scalex) + m_curCarSetting->get_m_hudPos().x,
-    (long)(m_curCarSetting->get_m_hudSize().y * m_curCarSetting->get_m_scaley() * m_scaley) + m_curCarSetting->get_m_hudPos().y };
+    (long)(m_curCarSetting->get_m_hudSize().x * m_curCarSetting->get_m_scale() * m_scalex) + m_curCarSetting->get_m_hudPos().x,
+    (long)(m_curCarSetting->get_m_hudSize().y * m_curCarSetting->get_m_scale() * m_scaley) + m_curCarSetting->get_m_hudPos().y };
   
   g_pRBRIDirect3DDevice9->StretchRect(drawSurface, NULL, originRenterTarget, &dst, D3DTEXF_LINEAR);
 
@@ -366,8 +378,22 @@ void RBRDashboard::DrawVROverlay(void) {
   //  return;
   //}
 
+  // Define the viewport dimensions
+  D3D11_VIEWPORT viewport;
+  viewport.TopLeftX = 0;
+  viewport.TopLeftY = 0;
+  viewport.Width = 800;
+  viewport.Height = 636;
+  viewport.MinDepth = 0.0f;
+  viewport.MaxDepth = 1.0f;
+
+  //// Set the viewport on the device context
+  //m_pID3D11DeviceContext->RSSetViewports(1, &viewport);
+
   //// Set the render target
   //m_pID3D11DeviceContext->OMSetRenderTargets(0, &renderTargetView, NULL);
+
+  m_curCarSetting->m_spriteBatch->SetViewport(viewport);
 
   D3D11_BOX src, dst;
   ZeroMemory(&src, sizeof(D3D11_BOX));
