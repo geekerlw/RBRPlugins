@@ -1,6 +1,6 @@
-# RBRDashboard
+# RBRPlugins
 
-This is a plugin for Richard Burns Rally that adds a dashboard at the stage running.
+This is a personal plugin set for Richard Burns Rally that making a more easy use.
 
 Big thanks to [mika-n](https://github.com/mika-n) that made the [NGPCarMenu](https://github.com/mika-n/NGPCarMenu) plugin and [RBRCountdown](https://github.com/HanaMcHanaface/RBRCountdown.git) that this plugin is based on. If it wasn't for NGPCarMenu I would never have been able to make this plugin. Big huge shoutout!!
 
@@ -14,8 +14,8 @@ To install, first find your RBR installation folder. Then, go to the `Plugins` f
 
 ## Configuration
 
-In `Plugins\RBRDashboard` you will find a file called `RBRDashboard.ini`. In this file you will find the settings:
+In each plugin's folder like `Plugins\RBRDashboard` you will find a configure file like `RBRDashboard.ini`, In this file you will find the settings.
 
 ## Uninstall
 
-In the Plugins folder, remove `RBRDashboard.dll` and the `RBRDashboard` folder.
+In the Plugins folder, remove it folder.
