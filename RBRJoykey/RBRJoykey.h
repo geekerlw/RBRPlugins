@@ -4,10 +4,12 @@
 #include "RBR/RBR.h"
 #include "Utils/INIUtil.h"
 #include "config.h"
+#include "SDL.h"
 
 class RBRJoykey : public IPlugin {
 private:
   IRBRGame* m_pGame;
+  SDL_Thread *m_thread;
   float m_scalex, m_scaley;
   Config::Setting *m_setting;
 
@@ -50,6 +52,10 @@ public:
   virtual void CheckPoint(float fCheckPointTime, int iCheckPointID, const char* ptxtPlayerName) {
     // Do nothing
   }
+
+public:
+  void JoystickButtonPressed(SDL_Event &event);
+  void JoystickButtonRelease(SDL_Event &event);
 
 private:
   void LoadINI(void);
