@@ -1,0 +1,407 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="头文件\Lib">
+      <UniqueIdentifier>{e47e1299-e00c-40b9-b1f4-afd7a004b6a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\RBR">
+      <UniqueIdentifier>{79845960-f7b7-430d-a0dd-e53f1538b3ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\libsdl2">
+      <UniqueIdentifier>{0c217d80-f7c2-4dfb-a261-490af77ea39c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Utils">
+      <UniqueIdentifier>{678709d2-b348-4ae7-813c-91cdfff0403b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Lib">
+      <UniqueIdentifier>{8a3d824a-4158-4816-8235-a3441f388e64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Utils">
+      <UniqueIdentifier>{678f5999-2673-49f0-97d7-b906392ef67b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\RBR">
+      <UniqueIdentifier>{09f87fb3-7f84-46ae-9c05-4165a6557ef2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Lib\Detourxs\detourxs.h">
+      <Filter>头文件\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\SimpleINI\SimpleIni.h">
+      <Filter>头文件\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\begin_code.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\close_code.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_assert.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_atomic.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_audio.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_bits.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_blendmode.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_clipboard.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_android.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_emscripten.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_iphoneos.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_macosx.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_minimal.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_ngage.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_os2.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_pandora.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_windows.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_wingdk.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_winrt.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_xbox.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_copying.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_cpuinfo.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_egl.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_endian.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_error.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_events.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_filesystem.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_gamecontroller.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_gesture.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_guid.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_haptic.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_hidapi.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_hints.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_joystick.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_keyboard.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_keycode.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_loadso.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_locale.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_log.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_main.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_messagebox.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_metal.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_misc.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_mouse.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_mutex.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_name.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_opengl.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_opengl_glext.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_opengles.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_opengles2.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_opengles2_gl2.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_opengles2_gl2ext.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_opengles2_gl2platform.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_opengles2_khrplatform.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_pixels.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_platform.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_power.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_quit.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_rect.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_render.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_revision.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_rwops.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_scancode.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_sensor.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_shape.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_stdinc.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_surface.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_system.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_syswm.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_assert.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_common.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_compare.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_crc32.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_font.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_fuzzer.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_harness.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_images.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_log.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_md5.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_memory.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_random.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_thread.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_timer.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_touch.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_types.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_version.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_video.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_vulkan.h">
+      <Filter>头文件\libsdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\INIUtil.h">
+      <Filter>头文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\LogUtil.h">
+      <Filter>头文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\StringUtil.h">
+      <Filter>头文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="RBR\D3D9Font\D3DFont.h">
+      <Filter>头文件\RBR</Filter>
+    </ClInclude>
+    <ClInclude Include="RBR\D3D9Font\SharedFont.h">
+      <Filter>头文件\RBR</Filter>
+    </ClInclude>
+    <ClInclude Include="RBR\D3D9Helpers.h">
+      <Filter>头文件\RBR</Filter>
+    </ClInclude>
+    <ClInclude Include="RBR\IPlugin.h">
+      <Filter>头文件\RBR</Filter>
+    </ClInclude>
+    <ClInclude Include="RBR\IRBRGame.h">
+      <Filter>头文件\RBR</Filter>
+    </ClInclude>
+    <ClInclude Include="RBR\RBR.h">
+      <Filter>头文件\RBR</Filter>
+    </ClInclude>
+    <ClInclude Include="RBR\RBRAPI.h">
+      <Filter>头文件\RBR</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RBRJoykey.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Detourxs\detourxs.cpp">
+      <Filter>源文件\Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="RBR\D3D9Font\D3DFont.cpp">
+      <Filter>源文件\RBR</Filter>
+    </ClCompile>
+    <ClCompile Include="RBR\D3D9Font\SharedFont.cpp">
+      <Filter>源文件\RBR</Filter>
+    </ClCompile>
+    <ClCompile Include="RBR\D3D9Helpers.cpp">
+      <Filter>源文件\RBR</Filter>
+    </ClCompile>
+    <ClCompile Include="RBR\RBRAPI.cpp">
+      <Filter>源文件\RBR</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\INIUtil.cpp">
+      <Filter>源文件\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\LogUtil.cpp">
+      <Filter>源文件\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\StringUtil.cpp">
+      <Filter>源文件\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="config.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RBRJoykey.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Thirdparty\libsdl2\include\SDL_config.h.cmake">
+      <Filter>头文件\libsdl2</Filter>
+    </None>
+    <None Include="Thirdparty\libsdl2\include\SDL_config.h.in">
+      <Filter>头文件\libsdl2</Filter>
+    </None>
+    <None Include="Thirdparty\libsdl2\include\SDL_revision.h.cmake">
+      <Filter>头文件\libsdl2</Filter>
+    </None>
+    <None Include="RBRJoykey.def">
+      <Filter>源文件</Filter>
+    </None>
+  </ItemGroup>
+</Project>

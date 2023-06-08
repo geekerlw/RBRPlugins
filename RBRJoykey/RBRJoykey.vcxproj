@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{9930275f-7eff-4d7a-96d9-cce346795ee8}</ProjectGuid>
+    <RootNamespace>RBRJoykey</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;RBRJOYKEY_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;RBRJOYKEY_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>.\Thirdparty\libsdl2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <ModuleDefinitionFile>RBRJoykey.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>.\Thirdparty\libsdl2;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.dll;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;RBRJOYKEY_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;RBRJOYKEY_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="config.h" />
+    <ClInclude Include="Lib\Detourxs\detourxs.h" />
+    <ClInclude Include="Lib\SimpleINI\SimpleIni.h" />
+    <ClInclude Include="RBRJoykey.h" />
+    <ClInclude Include="RBR\D3D9Font\D3DFont.h" />
+    <ClInclude Include="RBR\D3D9Font\SharedFont.h" />
+    <ClInclude Include="RBR\D3D9Helpers.h" />
+    <ClInclude Include="RBR\IPlugin.h" />
+    <ClInclude Include="RBR\IRBRGame.h" />
+    <ClInclude Include="RBR\RBR.h" />
+    <ClInclude Include="RBR\RBRAPI.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\begin_code.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\close_code.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_assert.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_atomic.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_audio.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_bits.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_blendmode.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_clipboard.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_android.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_emscripten.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_iphoneos.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_macosx.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_minimal.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_ngage.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_os2.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_pandora.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_windows.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_wingdk.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_winrt.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_config_xbox.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_copying.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_cpuinfo.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_egl.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_endian.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_error.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_events.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_filesystem.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_gamecontroller.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_gesture.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_guid.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_haptic.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_hidapi.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_hints.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_joystick.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_keyboard.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_keycode.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_loadso.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_locale.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_log.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_main.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_messagebox.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_metal.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_misc.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_mouse.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_mutex.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_name.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_opengl.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_opengles.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_opengles2.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_opengles2_gl2.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_opengles2_gl2ext.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_opengles2_gl2platform.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_opengles2_khrplatform.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_opengl_glext.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_pixels.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_platform.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_power.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_quit.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_rect.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_render.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_revision.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_rwops.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_scancode.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_sensor.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_shape.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_stdinc.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_surface.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_system.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_syswm.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_assert.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_common.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_compare.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_crc32.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_font.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_fuzzer.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_harness.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_images.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_log.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_md5.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_memory.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_test_random.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_thread.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_timer.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_touch.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_types.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_version.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_video.h" />
+    <ClInclude Include="Thirdparty\libsdl2\include\SDL_vulkan.h" />
+    <ClInclude Include="Utils\INIUtil.h" />
+    <ClInclude Include="Utils\LogUtil.h" />
+    <ClInclude Include="Utils\StringUtil.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="config.cpp" />
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Lib\Detourxs\detourxs.cpp" />
+    <ClCompile Include="RBRJoykey.cpp" />
+    <ClCompile Include="RBR\D3D9Font\D3DFont.cpp" />
+    <ClCompile Include="RBR\D3D9Font\SharedFont.cpp" />
+    <ClCompile Include="RBR\D3D9Helpers.cpp" />
+    <ClCompile Include="RBR\RBRAPI.cpp" />
+    <ClCompile Include="Utils\INIUtil.cpp" />
+    <ClCompile Include="Utils\LogUtil.cpp" />
+    <ClCompile Include="Utils\StringUtil.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="RBRJoykey.def" />
+    <None Include="Thirdparty\libsdl2\include\SDL_config.h.cmake" />
+    <None Include="Thirdparty\libsdl2\include\SDL_config.h.in" />
+    <None Include="Thirdparty\libsdl2\include\SDL_revision.h.cmake" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
