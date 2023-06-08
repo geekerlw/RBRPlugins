@@ -22,6 +22,13 @@ namespace Config {
     INIUtil::INIManager *m_ini;
   public:
     MEMBER_GET_SET(bool, m_pluginOn);
+
+    MEMBER_GET_SET(std::string, m_keyEsc);
+    MEMBER_GET_SET(std::string, m_keyEnter);
+    MEMBER_GET_SET(std::string, m_keyUp);
+    MEMBER_GET_SET(std::string, m_keyDown);
+    MEMBER_GET_SET(std::string, m_keyLeft);
+    MEMBER_GET_SET(std::string, m_keyRight);
   public:
     Setting(std::string filePath) {
       m_ini = new INIUtil::INIManager(filePath);

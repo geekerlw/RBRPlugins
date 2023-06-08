@@ -53,6 +53,7 @@ RBRJoykey::~RBRJoykey(void) {
     //TODO: maybe need to push an event like SDL_QUIT here.
     SDL_WaitThread(m_thread, NULL);
   }
+  SAFE_DELETE(m_setting);
 }
 
 const char* RBRJoykey::GetName(void) {
