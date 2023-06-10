@@ -14,6 +14,7 @@ namespace INIUtil {
     ~INIManager();
 
     string Get(const string& section, const string& name, const string& defaultValue);
+    int Set(const string& section, const string& name, const string& value);
     int Get(const string& section, const string& name, int defaultValue);
     float Get(const string& section, const string& name, float defaultValue);
     bool Get(const string& section, const string& name, bool defaultValue);

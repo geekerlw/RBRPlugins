@@ -42,6 +42,10 @@ namespace INIUtil {
     return value;
   }
 
+  int INIManager::Set(const string& section, const string& name, const string& value) {
+    return ini.SetValue(section.c_str(), name.c_str(), value.c_str());
+  }
+
   int INIManager::Get(const string& section, const string& name, int defaultValue) {
     string value = Get(section, name, std::to_string(defaultValue));
     int intValue = defaultValue;

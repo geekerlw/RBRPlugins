@@ -9,7 +9,8 @@
 class RBRJoykey : public IPlugin {
 private:
   IRBRGame* m_pGame;
-  SDL_Thread *m_thread;
+  std::map<int, SDL_Joystick*> m_joys;
+  int m_menuSelection;
   float m_scalex, m_scaley;
   Config::Setting *m_setting;
 
@@ -24,13 +25,9 @@ public:
     // Do nothing
   }
 
-  virtual void DrawFrontEndPage(void) {
-    // Do nothing
-  }
+  virtual void DrawFrontEndPage(void);
 
-  virtual void HandleFrontEndEvents(char txtKeyboard, bool bUp, bool bDown, bool bLeft, bool bRight, bool bSelect) {
-    // Do nothing
-  }
+  virtual void HandleFrontEndEvents(char txtKeyboard, bool bUp, bool bDown, bool bLeft, bool bRight, bool bSelect);
 
   virtual void TickFrontEndPage(float fTimeDelta) {
     // Do nothing
@@ -54,11 +51,16 @@ public:
   }
 
 public:
+  void CustomRBRDirectXStartSceneJoykey(void);
+
   void JoystickButtonPressed(SDL_Event &event);
+
   void JoystickButtonRelease(SDL_Event &event);
 
 private:
   void LoadINI(void);
 
   void InitJoykey(void);
+
+  void SendKeyInput(WORD key, DWORD flags);
 };

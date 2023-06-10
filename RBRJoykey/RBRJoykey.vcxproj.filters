@@ -403,5 +403,8 @@
     <None Include="RBRJoykey.def">
       <Filter>源文件</Filter>
     </None>
+    <None Include="Plugins\RBRJoykey.ini">
+      <Filter>资源文件</Filter>
+    </None>
   </ItemGroup>
 </Project>
