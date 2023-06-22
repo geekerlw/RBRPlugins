@@ -188,6 +188,7 @@ void RBRJoykey::JoystickButtonRelease(SDL_Event &event) {
 void RBRJoykey::DrawFrontEndPage(void) {
   float lineposx = 65.0f;
   float lineposy = 49.0f;
+  float lineheight = 21.0f;
 
   // Draw blackout (coordinates specify the 'window' where you don't want black background but the "RBR world" to be visible)
   m_pGame->DrawBlackOut(520.0f, 0.0f, 190.0f, 480.0f);
@@ -203,14 +204,14 @@ void RBRJoykey::DrawFrontEndPage(void) {
 
   // Draw red menu selection line
   m_pGame->SetMenuColor(IRBRGame::MENU_SELECTION);
-  m_pGame->DrawSelection(0.0f, 68.0f + (static_cast<float>(m_menuSelection) * 21.0f), 180.0f);
+  m_pGame->DrawSelection(0.0f, 68.0f + (static_cast<float>(m_menuSelection) * lineheight), 180.0f);
 
-  lineposy += 21.0f;
+  lineposy += lineheight;
   m_pGame->SetMenuColor(IRBRGame::MENU_TEXT);
   m_pGame->WriteText(lineposx, lineposy, "Plugin Status");
   m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_pluginOn() ? "ON" : "OFF");
 
-  lineposy += 21.0f;
+  lineposy += lineheight;
   m_pGame->SetMenuColor(IRBRGame::MENU_HEADING);
   m_pGame->WriteText(lineposx, lineposy, "KEY");
   m_pGame->WriteText(lineposx + 160.0f, lineposy, "INPUT");
@@ -223,42 +224,70 @@ void RBRJoykey::DrawFrontEndPage(void) {
     m_pGame->SetColor(0x20, 0x20, 0x20, 180);
   }
 
-  lineposy += 21.0f;
+  lineposy += lineheight;
   m_pGame->WriteText(lineposx, lineposy, "Up");
   m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyUp().c_str());
 
-  lineposy += 21.0f;
+  lineposy += lineheight;
   m_pGame->WriteText(lineposx, lineposy, "Down");
   m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyDown().c_str());
 
-  lineposy += 21.0f;
+  lineposy += lineheight;
   m_pGame->WriteText(lineposx, lineposy, "Left");
   m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyLeft().c_str());
 
-  lineposy += 21.0f;
+  lineposy += lineheight;
   m_pGame->WriteText(lineposx, lineposy, "Right");
   m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyRight().c_str());
 
-  lineposy += 21.0f;
+  lineposy += lineheight;
   m_pGame->WriteText(lineposx, lineposy, "ESC");
   m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyEsc().c_str());
 
-  lineposy += 21.0f;
+  lineposy += lineheight;
   m_pGame->WriteText(lineposx, lineposy, "Enter");
   m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyEnter().c_str());
 
-  lineposy += 21.0f;
+  lineposy += lineheight;
   m_pGame->WriteText(lineposx, lineposy, "Space");
   m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keySpace().c_str());
 
+  lineposy += lineheight;
+  m_pGame->WriteText(lineposx, lineposy, "Num6");
+  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyNum6().c_str());
+
+  lineposy += lineheight;
+  m_pGame->WriteText(lineposx, lineposy, "Num4");
+  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyNum4().c_str());
+
+  lineposy += lineheight;
+  m_pGame->WriteText(lineposx, lineposy, "Num8");
+  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyNum8().c_str());
+
+  lineposy += lineheight;
+  m_pGame->WriteText(lineposx, lineposy, "Num2");
+  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyNum2().c_str());
+
+  lineposy += lineheight;
+  m_pGame->WriteText(lineposx, lineposy, "Numadd");
+  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyNumadd().c_str());
+
+  lineposy += lineheight;
+  m_pGame->WriteText(lineposx, lineposy, "Numsub");
+  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyNumsub().c_str());
+
+  lineposy += lineheight;
+  m_pGame->WriteText(lineposx, lineposy, "Num0");
+  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyNum0().c_str());
+
   // Draw footer readme
-  lineposy += 100.0f;
   m_pGame->SetMenuColor(IRBRGame::MENU_HEADING);
   m_pGame->SetFont(IRBRGame::FONT_SMALL);
-  m_pGame->WriteText(lineposx, lineposy, "Use 'Enter' to set select Input.");
-  m_pGame->WriteText(lineposx, lineposy + 21.0f, "Use 'Left' to clear select setting.");
-  m_pGame->WriteText(lineposx, lineposy + 42.0f, "Use 'Right' to change select setting.");
-  m_pGame->WriteText(lineposx, lineposy + 63.0f, "Designed by Lw_Ziye, see me in https:://github.com/geekerlw/RBRPlugins");
+  m_pGame->WriteText(360.0f, 149.0f, "Use 'Enter' to set select Input.");
+  m_pGame->WriteText(360.0f, 149.0f + lineheight, "Use 'Left' to clear select setting.");
+  m_pGame->WriteText(360.0f, 149.0f + lineheight * 2, "Use 'Right' to change select setting.");
+  m_pGame->WriteText(360.0f, 149.0f + lineheight * 3, "Designed by Lw_Ziye.");
+  m_pGame->WriteText(360.0f, 149.0f + lineheight * 4, "https:://github.com/geekerlw/RBRPlugins");
 }
 
 void RBRJoykey::HandleFrontEndEvents(char txtKeyboard, bool bUp, bool bDown, bool bLeft, bool bRight, bool bSelect) {
@@ -287,6 +316,13 @@ void RBRJoykey::HandleFrontEndEvents(char txtKeyboard, bool bUp, bool bDown, boo
   case Config::MENU_KEYBIND_ESC:
   case Config::MENU_KEYBIND_ENTER:
   case Config::MENU_KEYBIND_SPACE:
+  case Config::MENU_KEYBIND_NUM6:
+  case Config::MENU_KEYBIND_NUM4:
+  case Config::MENU_KEYBIND_NUM2:
+  case Config::MENU_KEYBIND_NUM8:
+  case Config::MENU_KEYBIND_NUMADD:
+  case Config::MENU_KEYBIND_NUMSUB:
+  case Config::MENU_KEYBIND_NUM0:
     if (bLeft) {
       memset(keyname, 0, sizeof(keyname));
       m_setting->SaveConfig((Config::MENUITEM)m_menuSelection, keyname);

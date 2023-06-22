@@ -28,6 +28,13 @@ namespace Config {
     MENU_KEYBIND_ESC,
     MENU_KEYBIND_ENTER,
     MENU_KEYBIND_SPACE,
+    MENU_KEYBIND_NUM6,
+    MENU_KEYBIND_NUM4,
+    MENU_KEYBIND_NUM2,
+    MENU_KEYBIND_NUM8,
+    MENU_KEYBIND_NUMADD,
+    MENU_KEYBIND_NUMSUB,
+    MENU_KEYBIND_NUM0,
     MENU_BUTT
   } MENUITEM;
 
@@ -44,6 +51,13 @@ namespace Config {
     MEMBER_GET_SET(std::string, m_keyEsc);
     MEMBER_GET_SET(std::string, m_keyEnter);
     MEMBER_GET_SET(std::string, m_keySpace);
+    MEMBER_GET_SET(std::string, m_keyNum4);
+    MEMBER_GET_SET(std::string, m_keyNum6);
+    MEMBER_GET_SET(std::string, m_keyNum8);
+    MEMBER_GET_SET(std::string, m_keyNum2);
+    MEMBER_GET_SET(std::string, m_keyNumadd);
+    MEMBER_GET_SET(std::string, m_keyNumsub);
+    MEMBER_GET_SET(std::string, m_keyNum0);
 
   public:
     Setting(std::string filePath) {

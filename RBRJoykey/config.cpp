@@ -18,6 +18,13 @@ void Setting::LoadConfig(void) {
     set_m_keyEsc(m_ini->Get("keymap", "Esc", strValue));
     set_m_keyEnter(m_ini->Get("keymap", "Enter", strValue));
     set_m_keySpace(m_ini->Get("keymap", "Space", strValue));
+    set_m_keyNum4(m_ini->Get("keymap", "Num4", strValue));
+    set_m_keyNum6(m_ini->Get("keymap", "Num6", strValue));
+    set_m_keyNum8(m_ini->Get("keymap", "Num8", strValue));
+    set_m_keyNum2(m_ini->Get("keymap", "Num2", strValue));
+    set_m_keyNumadd(m_ini->Get("keymap", "Numadd", strValue));
+    set_m_keyNumsub(m_ini->Get("keymap", "Numsub", strValue));
+    set_m_keyNum0(m_ini->Get("keymap", "Num0", strValue));
 }
 
 void Setting::SaveConfig(void) {
@@ -56,6 +63,34 @@ void Setting::SaveConfig(MENUITEM type, const std::string& value) {
   case MENU_KEYBIND_SPACE:
     m_keySpace = value;
     m_ini->Set("keymap", "Space", m_keySpace);
+    break;
+  case MENU_KEYBIND_NUM6:
+    m_keySpace = value;
+    m_ini->Set("keymap", "Num6", m_keyNum6);
+    break;
+  case MENU_KEYBIND_NUM4:
+    m_keySpace = value;
+    m_ini->Set("keymap", "Num4", m_keyNum4);
+    break;
+  case MENU_KEYBIND_NUM2:
+    m_keySpace = value;
+    m_ini->Set("keymap", "Num2", m_keyNum2);
+    break;
+  case MENU_KEYBIND_NUM8:
+    m_keySpace = value;
+    m_ini->Set("keymap", "Num8", m_keyNum8);
+    break;
+  case MENU_KEYBIND_NUMADD:
+    m_keySpace = value;
+    m_ini->Set("keymap", "Numadd", m_keyNumadd);
+    break;
+  case MENU_KEYBIND_NUMSUB:
+    m_keySpace = value;
+    m_ini->Set("keymap", "Numsub", m_keyNumsub);
+    break;
+  case MENU_KEYBIND_NUM0:
+    m_keySpace = value;
+    m_ini->Set("keymap", "Num0", m_keyNum0);
     break;
   default:
     break;

@@ -119,9 +119,14 @@
     <None Include="RBRDashboard.def">
       <Filter>源文件</Filter>
     </None>
-    <None Include="RBRDashboard.ini">
-      <Filter>资源文件</Filter>
-    </None>
+    <None Include="..\Texture\ford-wrc-2019\config.ini" />
+    <None Include="..\Texture\ford-wrc-2019\distance.spritefont" />
+    <None Include="..\Texture\ford-wrc-2019\engine.spritefont" />
+    <None Include="..\Texture\ford-wrc-2019\ford-wrc-2019.psd" />
+    <None Include="..\Texture\ford-wrc-2019\speed.spritefont" />
+    <None Include="..\Texture\ford-wrc-2019\time.spritefont" />
+    <None Include="..\Texture\RBRDashboard.ini" />
+    <None Include="Thirdparty\openvr\bin\win32\openvr_api.dll" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h">
@@ -200,7 +205,11 @@
   <ItemGroup>
     <Library Include="Lib\Detourxs\LDE64.lib" />
     <Library Include="Lib\Detourxs\LDE64x64.lib" />
-    <Library Include="Thirdparty\DirectXTK\DirectXTK.lib" />
     <Library Include="Thirdparty\openvr\lib\win32\openvr_api.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Texture\ford-wrc-2019\digidash.png">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>
