@@ -1,0 +1,1 @@
+--format bc7 --quality normal --mips --mip-filter box --mip-filter-width 2 --zcmp 5
