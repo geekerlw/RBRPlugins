@@ -156,6 +156,27 @@ void RBRJoykey::JoystickButtonPressed(SDL_Event &event) {
   else if (m_setting->get_m_keySpace() == keyname) {
     SendKeyInput(VK_SPACE, 0);
   }
+  else if (m_setting->get_m_keyNum6() == keyname) {
+    SendKeyInput(VK_NUMPAD6, 0);
+  }
+  else if (m_setting->get_m_keyNum4() == keyname) {
+    SendKeyInput(VK_NUMPAD4, 0);
+  }
+  else if (m_setting->get_m_keyNum2() == keyname) {
+    SendKeyInput(VK_NUMPAD2, 0);
+  }
+  else if (m_setting->get_m_keyNum8() == keyname) {
+    SendKeyInput(VK_NUMPAD8, 0);
+  }
+  else if (m_setting->get_m_keyNumadd() == keyname) {
+    SendKeyInput(VK_ADD, 0);
+  }
+  else if (m_setting->get_m_keyNumsub() == keyname) {
+    SendKeyInput(VK_SUBTRACT, 0);
+  }
+  else if (m_setting->get_m_keyNum0() == keyname) {
+    SendKeyInput(VK_NUMPAD0, 0);
+  }
 }
 
 void RBRJoykey::JoystickButtonRelease(SDL_Event &event) {
@@ -182,6 +203,27 @@ void RBRJoykey::JoystickButtonRelease(SDL_Event &event) {
   }
   else if (m_setting->get_m_keySpace() == keyname) {
     SendKeyInput(VK_SPACE, KEYEVENTF_KEYUP);
+  }
+  else if (m_setting->get_m_keyNum6() == keyname) {
+    SendKeyInput(VK_NUMPAD6, KEYEVENTF_KEYUP);
+  }
+  else if (m_setting->get_m_keyNum4() == keyname) {
+    SendKeyInput(VK_NUMPAD4, KEYEVENTF_KEYUP);
+  }
+  else if (m_setting->get_m_keyNum2() == keyname) {
+    SendKeyInput(VK_NUMPAD2, KEYEVENTF_KEYUP);
+  }
+  else if (m_setting->get_m_keyNum8() == keyname) {
+    SendKeyInput(VK_NUMPAD8, KEYEVENTF_KEYUP);
+  }
+  else if (m_setting->get_m_keyNumadd() == keyname) {
+    SendKeyInput(VK_ADD, KEYEVENTF_KEYUP);
+  }
+  else if (m_setting->get_m_keyNumsub() == keyname) {
+    SendKeyInput(VK_SUBTRACT, KEYEVENTF_KEYUP);
+  }
+  else if (m_setting->get_m_keyNum0() == keyname) {
+    SendKeyInput(VK_NUMPAD0, KEYEVENTF_KEYUP);
   }
 }
 
