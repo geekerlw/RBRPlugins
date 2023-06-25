@@ -64,32 +64,32 @@ void Setting::SaveConfig(MENUITEM type, const std::string& value) {
     m_keySpace = value;
     m_ini->Set("keymap", "Space", m_keySpace);
     break;
-  case MENU_KEYBIND_NUM6:
-    m_keySpace = value;
-    m_ini->Set("keymap", "Num6", m_keyNum6);
-    break;
   case MENU_KEYBIND_NUM4:
-    m_keySpace = value;
+    m_keyNum4 = value;
     m_ini->Set("keymap", "Num4", m_keyNum4);
     break;
-  case MENU_KEYBIND_NUM2:
-    m_keySpace = value;
-    m_ini->Set("keymap", "Num2", m_keyNum2);
+  case MENU_KEYBIND_NUM6:
+    m_keyNum6 = value;
+    m_ini->Set("keymap", "Num6", m_keyNum6);
     break;
   case MENU_KEYBIND_NUM8:
-    m_keySpace = value;
+    m_keyNum8 = value;
     m_ini->Set("keymap", "Num8", m_keyNum8);
     break;
+  case MENU_KEYBIND_NUM2:
+    m_keyNum2 = value;
+    m_ini->Set("keymap", "Num2", m_keyNum2);
+    break;
   case MENU_KEYBIND_NUMADD:
-    m_keySpace = value;
+    m_keyNumadd = value;
     m_ini->Set("keymap", "Numadd", m_keyNumadd);
     break;
   case MENU_KEYBIND_NUMSUB:
-    m_keySpace = value;
+    m_keyNumsub = value;
     m_ini->Set("keymap", "Numsub", m_keyNumsub);
     break;
   case MENU_KEYBIND_NUM0:
-    m_keySpace = value;
+    m_keyNum0 = value;
     m_ini->Set("keymap", "Num0", m_keyNum0);
     break;
   default:

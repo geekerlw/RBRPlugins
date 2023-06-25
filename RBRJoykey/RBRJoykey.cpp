@@ -295,12 +295,12 @@ void RBRJoykey::DrawFrontEndPage(void) {
   m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keySpace().c_str());
 
   lineposy += lineheight;
-  m_pGame->WriteText(lineposx, lineposy, "Num6");
-  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyNum6().c_str());
-
-  lineposy += lineheight;
   m_pGame->WriteText(lineposx, lineposy, "Num4");
   m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyNum4().c_str());
+
+  lineposy += lineheight;
+  m_pGame->WriteText(lineposx, lineposy, "Num6");
+  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyNum6().c_str());
 
   lineposy += lineheight;
   m_pGame->WriteText(lineposx, lineposy, "Num8");
@@ -343,6 +343,7 @@ void RBRJoykey::HandleFrontEndEvents(char txtKeyboard, bool bUp, bool bDown, boo
     m_menuSelection = Config::MENU_BUTT - 1;
 
   SDL_Event event;
+  memset(&event, 0, sizeof(SDL_Event));
   char keyname[64] = { 0 };
   switch (m_menuSelection) {
   case Config::MENU_PLUGIN_STATE:
@@ -358,10 +359,10 @@ void RBRJoykey::HandleFrontEndEvents(char txtKeyboard, bool bUp, bool bDown, boo
   case Config::MENU_KEYBIND_ESC:
   case Config::MENU_KEYBIND_ENTER:
   case Config::MENU_KEYBIND_SPACE:
-  case Config::MENU_KEYBIND_NUM6:
   case Config::MENU_KEYBIND_NUM4:
-  case Config::MENU_KEYBIND_NUM2:
+  case Config::MENU_KEYBIND_NUM6:
   case Config::MENU_KEYBIND_NUM8:
+  case Config::MENU_KEYBIND_NUM2:
   case Config::MENU_KEYBIND_NUMADD:
   case Config::MENU_KEYBIND_NUMSUB:
   case Config::MENU_KEYBIND_NUM0:
