@@ -342,8 +342,6 @@ void RBRJoykey::HandleFrontEndEvents(char txtKeyboard, bool bUp, bool bDown, boo
   if (bDown && (++m_menuSelection) >= Config::MENU_BUTT)
     m_menuSelection = Config::MENU_BUTT - 1;
 
-  SDL_Event event;
-  memset(&event, 0, sizeof(SDL_Event));
   char keyname[64] = { 0 };
   switch (m_menuSelection) {
   case Config::MENU_PLUGIN_STATE:
@@ -371,9 +369,15 @@ void RBRJoykey::HandleFrontEndEvents(char txtKeyboard, bool bUp, bool bDown, boo
       m_setting->SaveConfig((Config::MENUITEM)m_menuSelection, keyname);
     }
     if (bSelect) {
-      if (SDL_WaitEventTimeout(&event, MAX_INPUT_WAITTING_TIME)) {
-        snprintf(keyname, sizeof(keyname), "%s # %d", SDL_JoystickName(SDL_JoystickFromInstanceID(event.jbutton.which)), event.jbutton.button);
-        m_setting->SaveConfig((Config::MENUITEM)m_menuSelection, keyname);
+      Uint64 startTime = SDL_GetTicks64();
+      SDL_Event event;
+      memset(&event, 0, sizeof(SDL_Event));
+      while (SDL_GetTicks64() - startTime < MAX_INPUT_WAITTING_TIME) {
+        if (SDL_PollEvent(&event) && event.type == SDL_JOYBUTTONDOWN) {
+          snprintf(keyname, sizeof(keyname), "%s # %d", SDL_JoystickName(SDL_JoystickFromInstanceID(event.jbutton.which)), event.jbutton.button);
+          m_setting->SaveConfig((Config::MENUITEM)m_menuSelection, keyname);
+          break;
+        }
       }
     }
     break;
