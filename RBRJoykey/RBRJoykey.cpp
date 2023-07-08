@@ -16,30 +16,31 @@ typedef struct {
   const char keyname[32];
   const std::string (Config::Setting::*get_func)(void);
   void (Config::Setting::*set_func)(std::string);
+  WORD simkey;
 } MenuAction_t;
 
 static const MenuAction_t g_menuActions[Config::MENU_BUTT] = {
-  {"Plugin Status", nullptr, nullptr}, // do not use.
-  {"Keys Group", nullptr, nullptr}, // do not use.
-  {"Up", &Config::Setting::get_m_keyUp, &Config::Setting::set_m_keyUp},
-  {"Down", &Config::Setting::get_m_keyDown, &Config::Setting::set_m_keyDown},
-  {"Left", &Config::Setting::get_m_keyLeft, &Config::Setting::set_m_keyLeft},
-  {"Right", &Config::Setting::get_m_keyRight, &Config::Setting::set_m_keyRight},
-  {"Esc", &Config::Setting::get_m_keyEsc, &Config::Setting::set_m_keyEsc},
-  {"Enter", &Config::Setting::get_m_keyEnter, &Config::Setting::set_m_keyEnter},
-  {"Space", &Config::Setting::get_m_keySpace, &Config::Setting::set_m_keySpace},
-  {"Left Shift", &Config::Setting::get_m_keyLshift, &Config::Setting::set_m_keyLshift},
-  {"Left Ctrl", &Config::Setting::get_m_keyLctrl, &Config::Setting::set_m_keyLctrl},
-  {"Page Up", &Config::Setting::get_m_keyPageUp, &Config::Setting::set_m_keyPageUp},
-  {"Page Down", &Config::Setting::get_m_keyPageDown, &Config::Setting::set_m_keyPageDown},
-  {"Num 4", &Config::Setting::get_m_keyNum4, &Config::Setting::set_m_keyNum4},
-  {"Num 6", &Config::Setting::get_m_keyNum6, &Config::Setting::set_m_keyNum6},
-  {"Num 8", &Config::Setting::get_m_keyNum8, &Config::Setting::set_m_keyNum8},
-  {"Num 2", &Config::Setting::get_m_keyNum2, &Config::Setting::set_m_keyNum2},
-  {"Num +", &Config::Setting::get_m_keyNumadd, &Config::Setting::set_m_keyNumadd},
-  {"Num -", &Config::Setting::get_m_keyNumsub, &Config::Setting::set_m_keyNumsub},
-  {"Num 0", &Config::Setting::get_m_keyNum0, &Config::Setting::set_m_keyNum0},
-  {"Num *", &Config::Setting::get_m_keyNumMultiply, &Config::Setting::set_m_keyNumMultiply},
+  {"Plugin Status", nullptr, nullptr, VK_NONAME}, // do not use.
+  {"Keys Group", nullptr, nullptr, VK_NONAME}, // do not use.
+  {"Up", &Config::Setting::get_m_keyUp, &Config::Setting::set_m_keyUp, VK_UP},
+  {"Down", &Config::Setting::get_m_keyDown, &Config::Setting::set_m_keyDown, VK_DOWN},
+  {"Left", &Config::Setting::get_m_keyLeft, &Config::Setting::set_m_keyLeft, VK_LEFT},
+  {"Right", &Config::Setting::get_m_keyRight, &Config::Setting::set_m_keyRight, VK_RIGHT},
+  {"Esc", &Config::Setting::get_m_keyEsc, &Config::Setting::set_m_keyEsc, VK_ESCAPE},
+  {"Enter", &Config::Setting::get_m_keyEnter, &Config::Setting::set_m_keyEnter, VK_RETURN},
+  {"Space", &Config::Setting::get_m_keySpace, &Config::Setting::set_m_keySpace, VK_SPACE},
+  {"Left Shift", &Config::Setting::get_m_keyLshift, &Config::Setting::set_m_keyLshift, VK_LSHIFT},
+  {"Left Ctrl", &Config::Setting::get_m_keyLctrl, &Config::Setting::set_m_keyLctrl, VK_LCONTROL},
+  {"Page Up", &Config::Setting::get_m_keyPageUp, &Config::Setting::set_m_keyPageUp, VK_PRIOR},
+  {"Page Down", &Config::Setting::get_m_keyPageDown, &Config::Setting::set_m_keyPageDown, VK_NEXT},
+  {"Num 4", &Config::Setting::get_m_keyNum4, &Config::Setting::set_m_keyNum4, VK_NUMPAD4},
+  {"Num 6", &Config::Setting::get_m_keyNum6, &Config::Setting::set_m_keyNum6, VK_NUMPAD6},
+  {"Num 8", &Config::Setting::get_m_keyNum8, &Config::Setting::set_m_keyNum8, VK_NUMPAD8},
+  {"Num 2", &Config::Setting::get_m_keyNum2, &Config::Setting::set_m_keyNum2, VK_NUMPAD2},
+  {"Num +", &Config::Setting::get_m_keyNumadd, &Config::Setting::set_m_keyNumadd, VK_ADD},
+  {"Num -", &Config::Setting::get_m_keyNumsub, &Config::Setting::set_m_keyNumsub, VK_SUBTRACT},
+  {"Num 0", &Config::Setting::get_m_keyNum0, &Config::Setting::set_m_keyNum0, VK_NUMPAD0},
+  {"Num *", &Config::Setting::get_m_keyNumMultiply, &Config::Setting::set_m_keyNumMultiply, VK_MULTIPLY},
 };
 
 RBRJoykey::RBRJoykey(IRBRGame* pGame) : m_pGame(pGame), m_initialized(false), m_listenSetting(false) {
@@ -84,8 +85,20 @@ void RBRJoykey::LoadINI(void) {
 
 void RBRJoykey::InitJoykey(void) {
   m_menuSelection = 0;
-  m_ticktime = ::GetTickCount32();
+  m_settingtime = ::GetTickCount32();
+  memset(&m_keystates, 0x0, sizeof(KeyState_t) * Config::MENU_BUTT);
   Input::SDLBackend::GetInstance()->regListener(this);
+}
+
+void RBRJoykey::OnWork(void) {
+  Input::SDLListener::OnWork();
+
+  for (int i = Config::MENU_KEYBIND_UP; i < Config::MENU_KEYBIND_MULTIPLY; i++) {
+    if (m_keystates[i].pressed && ::GetTickCount32() - m_keystates[i].lastPressTime > 200) { // long time pressed
+      SendKeyInput(g_menuActions[i].simkey, 0);
+      m_keystates[i] = { true, ::GetTickCount32() };
+    }
+  }
 }
 
 void RBRJoykey::OnEvent(SDL_Event& event) {
@@ -129,63 +142,11 @@ void RBRJoykey::SendKeyInput(WORD key, DWORD flags) {
 void RBRJoykey::JoystickButtonPressed(SDL_Event &event) {
   char keyname[64] = { 0 };
   snprintf(keyname, sizeof(keyname), "%s # %d", SDL_JoystickName(SDL_JoystickFromInstanceID(event.jbutton.which)), event.jbutton.button);
-
-  if (m_setting->get_m_keyUp() == keyname) {
-    SendKeyInput(VK_UP, 0);
-  }
-  else if (m_setting->get_m_keyDown() == keyname) {
-    SendKeyInput(VK_DOWN, 0);
-  }
-  else if (m_setting->get_m_keyLeft() == keyname) {
-    SendKeyInput(VK_LEFT, 0);
-  }
-  else if (m_setting->get_m_keyRight() == keyname) {
-    SendKeyInput(VK_RIGHT, 0);
-  }
-  else if (m_setting->get_m_keyEsc() == keyname) {
-    SendKeyInput(VK_ESCAPE, 0);
-  }
-  else if (m_setting->get_m_keyEnter() == keyname) {
-    SendKeyInput(VK_RETURN, 0);
-  }
-  else if (m_setting->get_m_keySpace() == keyname) {
-    SendKeyInput(VK_SPACE, 0);
-  }
-  else if (m_setting->get_m_keyLshift() == keyname) {
-    SendKeyInput(VK_LSHIFT, 0);
-  }
-  else if (m_setting->get_m_keyLctrl() == keyname) {
-    SendKeyInput(VK_LCONTROL, 0);
-  }
-  else if (m_setting->get_m_keyPageUp() == keyname) {
-    SendKeyInput(VK_PRIOR, 0);
-  }
-  else if (m_setting->get_m_keyPageDown() == keyname) {
-    SendKeyInput(VK_NEXT, 0);
-  }
-  else if (m_setting->get_m_keyNum6() == keyname) {
-    SendKeyInput(VK_NUMPAD6, 0);
-  }
-  else if (m_setting->get_m_keyNum4() == keyname) {
-    SendKeyInput(VK_NUMPAD4, 0);
-  }
-  else if (m_setting->get_m_keyNum2() == keyname) {
-    SendKeyInput(VK_NUMPAD2, 0);
-  }
-  else if (m_setting->get_m_keyNum8() == keyname) {
-    SendKeyInput(VK_NUMPAD8, 0);
-  }
-  else if (m_setting->get_m_keyNumadd() == keyname) {
-    SendKeyInput(VK_ADD, 0);
-  }
-  else if (m_setting->get_m_keyNumsub() == keyname) {
-    SendKeyInput(VK_SUBTRACT, 0);
-  }
-  else if (m_setting->get_m_keyNum0() == keyname) {
-    SendKeyInput(VK_NUMPAD0, 0);
-  }
-  else if (m_setting->get_m_keyNumMultiply() == keyname) {
-    SendKeyInput(VK_MULTIPLY, 0);
+  for (int i = Config::MENU_KEYBIND_UP; i < Config::MENU_KEYBIND_MULTIPLY; i++) {
+    if ((m_setting->*g_menuActions[i].get_func)() == keyname) {
+      SendKeyInput(g_menuActions[i].simkey, 0);
+      m_keystates[i] = { true, ::GetTickCount32() };
+    }
   }
 }
 
@@ -193,62 +154,11 @@ void RBRJoykey::JoystickButtonRelease(SDL_Event &event) {
   char keyname[64] = { 0 };
   snprintf(keyname, sizeof(keyname), "%s # %d", SDL_JoystickName(SDL_JoystickFromInstanceID(event.jbutton.which)), event.jbutton.button);
 
-  if (m_setting->get_m_keyUp() == keyname) {
-    SendKeyInput(VK_UP, KEYEVENTF_KEYUP);
-  }
-  else if (m_setting->get_m_keyDown() == keyname) {
-    SendKeyInput(VK_DOWN, KEYEVENTF_KEYUP);
-  }
-  else if (m_setting->get_m_keyLeft() == keyname) {
-    SendKeyInput(VK_LEFT, KEYEVENTF_KEYUP);
-  }
-  else if (m_setting->get_m_keyRight() == keyname) {
-    SendKeyInput(VK_RIGHT, KEYEVENTF_KEYUP);
-  }
-  else if (m_setting->get_m_keyEsc() == keyname) {
-    SendKeyInput(VK_ESCAPE, KEYEVENTF_KEYUP);
-  }
-  else if (m_setting->get_m_keyEnter() == keyname) {
-    SendKeyInput(VK_RETURN, KEYEVENTF_KEYUP);
-  }
-  else if (m_setting->get_m_keySpace() == keyname) {
-    SendKeyInput(VK_SPACE, KEYEVENTF_KEYUP);
-  }
-  else if (m_setting->get_m_keyLshift() == keyname) {
-    SendKeyInput(VK_LSHIFT, KEYEVENTF_KEYUP);
-  }
-  else if (m_setting->get_m_keyLctrl() == keyname) {
-    SendKeyInput(VK_LCONTROL, KEYEVENTF_KEYUP);
-  }
-  else if (m_setting->get_m_keyPageUp() == keyname) {
-    SendKeyInput(VK_PRIOR, KEYEVENTF_KEYUP);
-  }
-  else if (m_setting->get_m_keyPageDown() == keyname) {
-    SendKeyInput(VK_NEXT, KEYEVENTF_KEYUP);
-  }
-  else if (m_setting->get_m_keyNum6() == keyname) {
-    SendKeyInput(VK_NUMPAD6, KEYEVENTF_KEYUP);
-  }
-  else if (m_setting->get_m_keyNum4() == keyname) {
-    SendKeyInput(VK_NUMPAD4, KEYEVENTF_KEYUP);
-  }
-  else if (m_setting->get_m_keyNum2() == keyname) {
-    SendKeyInput(VK_NUMPAD2, KEYEVENTF_KEYUP);
-  }
-  else if (m_setting->get_m_keyNum8() == keyname) {
-    SendKeyInput(VK_NUMPAD8, KEYEVENTF_KEYUP);
-  }
-  else if (m_setting->get_m_keyNumadd() == keyname) {
-    SendKeyInput(VK_ADD, KEYEVENTF_KEYUP);
-  }
-  else if (m_setting->get_m_keyNumsub() == keyname) {
-    SendKeyInput(VK_SUBTRACT, KEYEVENTF_KEYUP);
-  }
-  else if (m_setting->get_m_keyNum0() == keyname) {
-    SendKeyInput(VK_NUMPAD0, KEYEVENTF_KEYUP);
-  }
-  else if (m_setting->get_m_keyNumMultiply() == keyname) {
-    SendKeyInput(VK_MULTIPLY, KEYEVENTF_KEYUP);
+  for (int i = Config::MENU_KEYBIND_UP; i < Config::MENU_KEYBIND_MULTIPLY; i++) {
+    if ((m_setting->*g_menuActions[i].get_func)() == keyname) {
+      SendKeyInput(g_menuActions[i].simkey, KEYEVENTF_KEYUP);
+      m_keystates[i] = { false, ::GetTickCount32() };
+    }
   }
 }
 
@@ -323,7 +233,7 @@ void RBRJoykey::DrawFrontEndPage(void) {
   }
 
   if (m_listenSetting) {
-    DWORD duration = ::GetTickCount32() - m_ticktime;
+    DWORD duration = ::GetTickCount32() - m_settingtime;
     if (duration > MAX_INPUT_WAITTING_TIME) {
       m_listenSetting = false;
     }
@@ -371,7 +281,7 @@ void RBRJoykey::HandleFrontEndEvents(char txtKeyboard, bool bUp, bool bDown, boo
         m_setting->SaveConfig((Config::MENUITEM)m_menuSelection, keyname);
       }
       if (bSelect) {
-        m_ticktime = ::GetTickCount32();
+        m_settingtime = ::GetTickCount32();
         ClearLastEvent();
         m_listenSetting = true;
       }

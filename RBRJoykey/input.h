@@ -12,6 +12,8 @@ namespace Input {
 		SDLListener() { memset(&m_lastEvent, 0x0, sizeof(SDL_Event)); };
 		virtual ~SDLListener() {};
 
+		virtual void OnWork(void) {};
+
 		virtual void OnEvent(SDL_Event& event) { m_lastEvent = event; };
 
 		void ClearLastEvent(void) { memset(&m_lastEvent, 0x0, sizeof(SDL_Event)); };

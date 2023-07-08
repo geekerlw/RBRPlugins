@@ -7,13 +7,19 @@
 #include "input.h"
 #include "SDL.h"
 
+typedef struct {
+  bool pressed;
+  DWORD lastPressTime;
+} KeyState_t;
+
 class RBRJoykey : public IPlugin, public Input::SDLListener {
 private:
   IRBRGame* m_pGame;
   bool m_initialized, m_listenSetting;
   int m_menuSelection;
   Config::Setting *m_setting;
-  DWORD m_ticktime;
+  DWORD m_settingtime;
+  KeyState_t m_keystates[Config::MENU_BUTT];
 
 public:
   RBRJoykey(IRBRGame* pGame);
@@ -51,6 +57,8 @@ public:
     // Do nothing
   }
 
+
+  virtual void OnWork(void);
   virtual void OnEvent(SDL_Event& event);
 
 public:

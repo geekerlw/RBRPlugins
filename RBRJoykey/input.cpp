@@ -38,19 +38,26 @@ static int SDLBackendThread(void* arg) {
 	}
 
 	while (!pthis->m_isExit) {
-		SDL_Event event;
-		while (SDL_WaitEventTimeout(&event, 100))
-		{
-			SDL_LockMutex(pthis->m_sdlmutex);
-			std::list<SDLListener*> templist = pthis->m_listeners;
-			SDL_UnlockMutex(pthis->m_sdlmutex);
+		SDL_LockMutex(pthis->m_sdlmutex);
+		std::list<SDLListener*> templist = pthis->m_listeners;
+		SDL_UnlockMutex(pthis->m_sdlmutex);
 
+		SDL_Event event;
+		while (SDL_WaitEventTimeout(&event, 20))
+		{
 			std::list<SDLListener*>::iterator iter = templist.begin();
 			while (iter != templist.end()) {
 				(*iter)->OnEvent(event);
 				iter++;
 			}
 		}
+
+		std::list<SDLListener*>::iterator iter = templist.begin();
+		while (iter != templist.end()) {
+			(*iter)->OnWork();
+			iter++;
+		}
+
 	}
 
 	std::map<int, SDL_Joystick*>::iterator iter = joys.begin();
