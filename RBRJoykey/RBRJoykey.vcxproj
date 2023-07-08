@@ -83,7 +83,7 @@
       <AdditionalIncludeDirectories>.\Thirdparty\libsdl2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -156,6 +156,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="config.h" />
+    <ClInclude Include="input.h" />
     <ClInclude Include="Lib\Detourxs\detourxs.h" />
     <ClInclude Include="Lib\SimpleINI\SimpleIni.h" />
     <ClInclude Include="RBRJoykey.h" />
@@ -265,6 +266,7 @@
   <ItemGroup>
     <ClCompile Include="config.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="input.cpp" />
     <ClCompile Include="Lib\Detourxs\detourxs.cpp" />
     <ClCompile Include="RBRJoykey.cpp" />
     <ClCompile Include="RBR\D3D9Font\D3DFont.cpp" />

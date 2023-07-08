@@ -12,28 +12,37 @@
 
 extern IPlugin* g_pRBRPlugin;
 
-tRBRDirectXEndScene Func_OrigRBRDirectXStartScene = nullptr;
-tRBRDirectXEndScene Func_OrigRBRDirectXEndScene = nullptr;
+typedef struct {
+  const char keyname[32];
+  const std::string (Config::Setting::*get_func)(void);
+  void (Config::Setting::*set_func)(std::string);
+} MenuAction_t;
 
-HRESULT __fastcall CustomRBRDirectXStartScene(void* objPointer) {
-  // We need code at the beginning of this function that is not a call to another function.
-  // If we just added "Countdown::DrawCountdown();" then hooking EndScene from another 
-  // plugin will fail. This is because of some technicality of how the hooking works.
+static const MenuAction_t g_menuActions[Config::MENU_BUTT] = {
+  {"Plugin Status", nullptr, nullptr}, // do not use.
+  {"Keys Group", nullptr, nullptr}, // do not use.
+  {"Up", &Config::Setting::get_m_keyUp, &Config::Setting::set_m_keyUp},
+  {"Down", &Config::Setting::get_m_keyDown, &Config::Setting::set_m_keyDown},
+  {"Left", &Config::Setting::get_m_keyLeft, &Config::Setting::set_m_keyLeft},
+  {"Right", &Config::Setting::get_m_keyRight, &Config::Setting::set_m_keyRight},
+  {"Esc", &Config::Setting::get_m_keyEsc, &Config::Setting::set_m_keyEsc},
+  {"Enter", &Config::Setting::get_m_keyEnter, &Config::Setting::set_m_keyEnter},
+  {"Space", &Config::Setting::get_m_keySpace, &Config::Setting::set_m_keySpace},
+  {"Left Shift", &Config::Setting::get_m_keyLshift, &Config::Setting::set_m_keyLshift},
+  {"Left Ctrl", &Config::Setting::get_m_keyLctrl, &Config::Setting::set_m_keyLctrl},
+  {"Page Up", &Config::Setting::get_m_keyPageUp, &Config::Setting::set_m_keyPageUp},
+  {"Page Down", &Config::Setting::get_m_keyPageDown, &Config::Setting::set_m_keyPageDown},
+  {"Num 4", &Config::Setting::get_m_keyNum4, &Config::Setting::set_m_keyNum4},
+  {"Num 6", &Config::Setting::get_m_keyNum6, &Config::Setting::set_m_keyNum6},
+  {"Num 8", &Config::Setting::get_m_keyNum8, &Config::Setting::set_m_keyNum8},
+  {"Num 2", &Config::Setting::get_m_keyNum2, &Config::Setting::set_m_keyNum2},
+  {"Num +", &Config::Setting::get_m_keyNumadd, &Config::Setting::set_m_keyNumadd},
+  {"Num -", &Config::Setting::get_m_keyNumsub, &Config::Setting::set_m_keyNumsub},
+  {"Num 0", &Config::Setting::get_m_keyNum0, &Config::Setting::set_m_keyNum0},
+  {"Num *", &Config::Setting::get_m_keyNumMultiply, &Config::Setting::set_m_keyNumMultiply},
+};
 
-  ((RBRJoykey*)g_pRBRPlugin)->CustomRBRDirectXStartSceneJoykey();
-
-  return ::Func_OrigRBRDirectXStartScene(objPointer);
-}
-
-HRESULT __fastcall CustomRBRDirectXEndScene(void* objPointer) {
-  // We need code at the beginning of this function that is not a call to another function.
-  // If we just added "Countdown::DrawCountdown();" then hooking EndScene from another 
-  // plugin will fail. This is because of some technicality of how the hooking works.
-
-  return ::Func_OrigRBRDirectXEndScene(objPointer);
-}
-
-RBRJoykey::RBRJoykey(IRBRGame* pGame) : m_pGame(pGame) {
+RBRJoykey::RBRJoykey(IRBRGame* pGame) : m_pGame(pGame), m_initialized(false), m_listenSetting(false) {
   LogUtil::ToFile("Creating Plugin " + Config::PluginName + ".");
 
   if(CreateDirectory(Config::PluginFolder.c_str(), NULL) ||
@@ -49,29 +58,21 @@ RBRJoykey::RBRJoykey(IRBRGame* pGame) : m_pGame(pGame) {
 
 RBRJoykey::~RBRJoykey(void) {
   LogUtil::ToFile("Destroying Plugin " + Config::PluginName + ".");
-  std::map<int, SDL_Joystick*>::iterator iter = m_joys.begin();
-  while (iter != m_joys.end()) {
-    SDL_JoystickClose(iter->second);
-    iter++;
-  }
-  SDL_Quit();
+  Input::SDLBackend::GetInstance()->unregListener(this);
+  Input::SDLBackend::GetInstance()->Stop();
   SAFE_DELETE(m_setting);
 }
 
 const char* RBRJoykey::GetName(void) {
-  if(Func_OrigRBRDirectXEndScene == nullptr) {
+  if(!m_initialized) {
     // Do the initialization and texture creation only once because RBR may call GetName several times
     LogUtil::ToFile("Initializing the plugin");
 
     RBRAPI_InitializeObjReferences();
+    Input::SDLBackend::GetInstance()->Start();
 
     InitJoykey();
-
-    auto gtcDirect3DStartScene = new DetourXS((LPVOID)0x0040E880, ::CustomRBRDirectXStartScene, TRUE);
-    Func_OrigRBRDirectXStartScene = (tRBRDirectXEndScene)gtcDirect3DStartScene->GetTrampoline();
-
-    auto gtcDirect3DEndScene = new DetourXS((LPVOID)0x0040E890, ::CustomRBRDirectXEndScene, TRUE);
-    Func_OrigRBRDirectXEndScene = (tRBRDirectXEndScene)gtcDirect3DEndScene->GetTrampoline();
+    m_initialized = true;
   }
 
   return Config::PluginName.c_str();
@@ -82,32 +83,17 @@ void RBRJoykey::LoadINI(void) {
 }
 
 void RBRJoykey::InitJoykey(void) {
-  POINT pa, pb;
-  RBRAPI_MapRBRPointToScreenPoint(0, 0, &pa);
-  RBRAPI_MapRBRPointToScreenPoint(640, 480, &pb);
-  m_scalex = std::abs(pb.x - pa.x) / 1920.0f;
-  m_scaley = std::abs(pb.y - pa.y) / 1440.0f;
   m_menuSelection = 0;
-
-  if (SDL_Init(SDL_INIT_JOYSTICK) != 0) {
-    LogUtil::ToFile("Failed initialize sdl with error: %s" + std::string(SDL_GetError()));
-    return;
-  }
-
-  SDL_JoystickEventState(SDL_ENABLE);
-
-  // Open all connected joysticks
-  for (int i = 0; i < SDL_NumJoysticks(); i++) {
-    m_joys[i] = SDL_JoystickOpen(i);
-  }
+  m_ticktime = ::GetTickCount32();
+  Input::SDLBackend::GetInstance()->regListener(this);
 }
 
-void RBRJoykey::CustomRBRDirectXStartSceneJoykey(void) {
+void RBRJoykey::OnEvent(SDL_Event& event) {
+  Input::SDLListener::OnEvent(event);
   if (!m_setting->get_m_pluginOn())
     return;
 
-  SDL_Event event;
-  while (SDL_PollEvent(&event)) {
+  if (!m_listenSetting) {
     switch (event.type) {
     case SDL_QUIT:
       break;
@@ -119,6 +105,15 @@ void RBRJoykey::CustomRBRDirectXStartSceneJoykey(void) {
       break;
     default:
       break;
+    }
+  }
+  else { // in keybind setting menu
+    if (event.type == SDL_JOYBUTTONDOWN) {
+      char keyname[64] = { 0 };
+      snprintf(keyname, sizeof(keyname), "%s # %d", SDL_JoystickName(SDL_JoystickFromInstanceID(event.jbutton.which)), event.jbutton.button);
+      m_setting->SaveConfig((Config::MENUITEM)m_menuSelection, keyname);
+      m_setting->SaveConfig();
+      m_listenSetting = false;
     }
   }
 }
@@ -156,6 +151,18 @@ void RBRJoykey::JoystickButtonPressed(SDL_Event &event) {
   else if (m_setting->get_m_keySpace() == keyname) {
     SendKeyInput(VK_SPACE, 0);
   }
+  else if (m_setting->get_m_keyLshift() == keyname) {
+    SendKeyInput(VK_LSHIFT, 0);
+  }
+  else if (m_setting->get_m_keyLctrl() == keyname) {
+    SendKeyInput(VK_LCONTROL, 0);
+  }
+  else if (m_setting->get_m_keyPageUp() == keyname) {
+    SendKeyInput(VK_PRIOR, 0);
+  }
+  else if (m_setting->get_m_keyPageDown() == keyname) {
+    SendKeyInput(VK_NEXT, 0);
+  }
   else if (m_setting->get_m_keyNum6() == keyname) {
     SendKeyInput(VK_NUMPAD6, 0);
   }
@@ -176,6 +183,9 @@ void RBRJoykey::JoystickButtonPressed(SDL_Event &event) {
   }
   else if (m_setting->get_m_keyNum0() == keyname) {
     SendKeyInput(VK_NUMPAD0, 0);
+  }
+  else if (m_setting->get_m_keyNumMultiply() == keyname) {
+    SendKeyInput(VK_MULTIPLY, 0);
   }
 }
 
@@ -204,6 +214,18 @@ void RBRJoykey::JoystickButtonRelease(SDL_Event &event) {
   else if (m_setting->get_m_keySpace() == keyname) {
     SendKeyInput(VK_SPACE, KEYEVENTF_KEYUP);
   }
+  else if (m_setting->get_m_keyLshift() == keyname) {
+    SendKeyInput(VK_LSHIFT, KEYEVENTF_KEYUP);
+  }
+  else if (m_setting->get_m_keyLctrl() == keyname) {
+    SendKeyInput(VK_LCONTROL, KEYEVENTF_KEYUP);
+  }
+  else if (m_setting->get_m_keyPageUp() == keyname) {
+    SendKeyInput(VK_PRIOR, KEYEVENTF_KEYUP);
+  }
+  else if (m_setting->get_m_keyPageDown() == keyname) {
+    SendKeyInput(VK_NEXT, KEYEVENTF_KEYUP);
+  }
   else if (m_setting->get_m_keyNum6() == keyname) {
     SendKeyInput(VK_NUMPAD6, KEYEVENTF_KEYUP);
   }
@@ -225,12 +247,17 @@ void RBRJoykey::JoystickButtonRelease(SDL_Event &event) {
   else if (m_setting->get_m_keyNum0() == keyname) {
     SendKeyInput(VK_NUMPAD0, KEYEVENTF_KEYUP);
   }
+  else if (m_setting->get_m_keyNumMultiply() == keyname) {
+    SendKeyInput(VK_MULTIPLY, KEYEVENTF_KEYUP);
+  }
 }
 
 void RBRJoykey::DrawFrontEndPage(void) {
   float lineposx = 65.0f;
   float lineposy = 49.0f;
   float lineheight = 21.0f;
+  int startpos = 0;
+  int endpos = 0;
 
   // Draw blackout (coordinates specify the 'window' where you don't want black background but the "RBR world" to be visible)
   m_pGame->DrawBlackOut(520.0f, 0.0f, 190.0f, 480.0f);
@@ -246,7 +273,12 @@ void RBRJoykey::DrawFrontEndPage(void) {
 
   // Draw red menu selection line
   m_pGame->SetMenuColor(IRBRGame::MENU_SELECTION);
-  m_pGame->DrawSelection(0.0f, 68.0f + (static_cast<float>(m_menuSelection) * lineheight), 180.0f);
+  if (Config::MENU_KEYBIND_NUM4 <= m_menuSelection) {
+    m_pGame->DrawSelection(0.0f, 68.0f + (static_cast<float>(m_menuSelection - Config::MENU_KEYBIND_NUM4 + 2) * lineheight), 180.0f);
+  }
+  else {
+    m_pGame->DrawSelection(0.0f, 68.0f + (static_cast<float>(m_menuSelection) * lineheight), 180.0f);
+  }
 
   lineposy += lineheight;
   m_pGame->SetMenuColor(IRBRGame::MENU_TEXT);
@@ -256,7 +288,15 @@ void RBRJoykey::DrawFrontEndPage(void) {
   lineposy += lineheight;
   m_pGame->SetMenuColor(IRBRGame::MENU_HEADING);
   m_pGame->WriteText(lineposx, lineposy, "KEY");
-  m_pGame->WriteText(lineposx + 160.0f, lineposy, "INPUT");
+  if (Config::MENU_KEYBIND_UP <= m_menuSelection && m_menuSelection <= Config::MENU_KEYBIND_PAGEDOWN) {
+    m_pGame->WriteText(lineposx + 160.f, lineposy, "General Keys");
+  }
+  else if (Config::MENU_KEYBIND_NUM4 <= m_menuSelection && m_menuSelection <= Config::MENU_KEYBIND_MULTIPLY) {
+    m_pGame->WriteText(lineposx + 160.f, lineposy, "VR Keys");
+  }
+  else {
+    m_pGame->WriteText(lineposx + 160.0f, lineposy, "Input");
+  }
 
   if (m_setting->get_m_pluginOn()) {
     m_pGame->SetMenuColor(IRBRGame::MENU_TEXT);
@@ -266,73 +306,46 @@ void RBRJoykey::DrawFrontEndPage(void) {
     m_pGame->SetColor(0x20, 0x20, 0x20, 180);
   }
 
-  lineposy += lineheight;
-  m_pGame->WriteText(lineposx, lineposy, "Up");
-  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyUp().c_str());
+  // draw keys menu
+  if (Config::MENU_PLUGIN_STATE <= m_menuSelection && m_menuSelection <= Config::MENU_KEYBIND_PAGEDOWN) {
+    startpos = Config::MENU_KEYBIND_UP;
+    endpos = Config::MENU_KEYBIND_PAGEDOWN;
+  }
+  else if (Config::MENU_KEYBIND_NUM4 <= m_menuSelection && m_menuSelection <= Config::MENU_KEYBIND_MULTIPLY) {
+    startpos = Config::MENU_KEYBIND_NUM4;
+    endpos = Config::MENU_KEYBIND_MULTIPLY;
+  }
 
-  lineposy += lineheight;
-  m_pGame->WriteText(lineposx, lineposy, "Down");
-  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyDown().c_str());
+  for (int i = startpos; i <= endpos; i++) {
+    lineposy += lineheight;
+    m_pGame->WriteText(lineposx, lineposy, g_menuActions[i].keyname);
+    m_pGame->WriteText(lineposx + 160.0f, lineposy, (m_setting->*g_menuActions[i].get_func)().c_str());
+  }
 
-  lineposy += lineheight;
-  m_pGame->WriteText(lineposx, lineposy, "Left");
-  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyLeft().c_str());
-
-  lineposy += lineheight;
-  m_pGame->WriteText(lineposx, lineposy, "Right");
-  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyRight().c_str());
-
-  lineposy += lineheight;
-  m_pGame->WriteText(lineposx, lineposy, "ESC");
-  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyEsc().c_str());
-
-  lineposy += lineheight;
-  m_pGame->WriteText(lineposx, lineposy, "Enter");
-  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyEnter().c_str());
-
-  lineposy += lineheight;
-  m_pGame->WriteText(lineposx, lineposy, "Space");
-  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keySpace().c_str());
-
-  lineposy += lineheight;
-  m_pGame->WriteText(lineposx, lineposy, "Num4");
-  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyNum4().c_str());
-
-  lineposy += lineheight;
-  m_pGame->WriteText(lineposx, lineposy, "Num6");
-  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyNum6().c_str());
-
-  lineposy += lineheight;
-  m_pGame->WriteText(lineposx, lineposy, "Num8");
-  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyNum8().c_str());
-
-  lineposy += lineheight;
-  m_pGame->WriteText(lineposx, lineposy, "Num2");
-  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyNum2().c_str());
-
-  lineposy += lineheight;
-  m_pGame->WriteText(lineposx, lineposy, "Numadd");
-  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyNumadd().c_str());
-
-  lineposy += lineheight;
-  m_pGame->WriteText(lineposx, lineposy, "Numsub");
-  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyNumsub().c_str());
-
-  lineposy += lineheight;
-  m_pGame->WriteText(lineposx, lineposy, "Num0");
-  m_pGame->WriteText(lineposx + 160.0f, lineposy, m_setting->get_m_keyNum0().c_str());
+  if (m_listenSetting) {
+    DWORD duration = ::GetTickCount32() - m_ticktime;
+    if (duration > MAX_INPUT_WAITTING_TIME) {
+      m_listenSetting = false;
+    }
+    else {
+      char notice[64] = { 0 };
+      snprintf(notice, sizeof(notice), "Press A key to bind, remain time %d S\n", (MAX_INPUT_WAITTING_TIME - duration) / 1000);
+      m_pGame->WriteText(lineposx, 400.0f, notice);
+    }
+  }
 
   // Draw footer readme
   m_pGame->SetMenuColor(IRBRGame::MENU_HEADING);
   m_pGame->SetFont(IRBRGame::FONT_SMALL);
-  m_pGame->WriteText(360.0f, 149.0f, "Use 'Enter' to set select Input.");
-  m_pGame->WriteText(360.0f, 149.0f + lineheight, "Use 'Left' to clear select setting.");
-  m_pGame->WriteText(360.0f, 149.0f + lineheight * 2, "Use 'Right' to change select setting.");
-  m_pGame->WriteText(360.0f, 149.0f + lineheight * 3, "Designed by Lw_Ziye.");
-  m_pGame->WriteText(360.0f, 149.0f + lineheight * 4, "https:://github.com/geekerlw/RBRPlugins");
+  m_pGame->WriteText(lineposx, 421.0f, "Use 'Enter' to set select Input.");
+  m_pGame->WriteText(lineposx, 421.0f + lineheight, "Use 'Left' to clear select setting.");
+  m_pGame->WriteText(lineposx, 421.0f + lineheight * 2, "Use 'Right' to change select setting.");
 }
 
 void RBRJoykey::HandleFrontEndEvents(char txtKeyboard, bool bUp, bool bDown, bool bLeft, bool bRight, bool bSelect) {
+  if (m_listenSetting)
+    return;
+
   //
   // Menu focus line moved up or down
   //
@@ -345,44 +358,24 @@ void RBRJoykey::HandleFrontEndEvents(char txtKeyboard, bool bUp, bool bDown, boo
   char keyname[64] = { 0 };
   switch (m_menuSelection) {
   case Config::MENU_PLUGIN_STATE:
-    if (bRight) {
+    if (bLeft || bRight) {
       m_setting->m_pluginOn = !m_setting->get_m_pluginOn();
       m_setting->SaveConfig((Config::MENUITEM)m_menuSelection, m_setting->get_m_pluginOn() ? "true" : "false");
-    }
-    break;
-  case Config::MENU_KEYBIND_UP:
-  case Config::MENU_KEYBIND_DOWN:
-  case Config::MENU_KEYBIND_LEFT:
-  case Config::MENU_KEYBIND_RIGHT:
-  case Config::MENU_KEYBIND_ESC:
-  case Config::MENU_KEYBIND_ENTER:
-  case Config::MENU_KEYBIND_SPACE:
-  case Config::MENU_KEYBIND_NUM4:
-  case Config::MENU_KEYBIND_NUM6:
-  case Config::MENU_KEYBIND_NUM8:
-  case Config::MENU_KEYBIND_NUM2:
-  case Config::MENU_KEYBIND_NUMADD:
-  case Config::MENU_KEYBIND_NUMSUB:
-  case Config::MENU_KEYBIND_NUM0:
-    if (bLeft) {
-      memset(keyname, 0, sizeof(keyname));
-      m_setting->SaveConfig((Config::MENUITEM)m_menuSelection, keyname);
-    }
-    if (bSelect) {
-      Uint64 startTime = SDL_GetTicks64();
-      SDL_Event event;
-      memset(&event, 0, sizeof(SDL_Event));
-      while (SDL_GetTicks64() - startTime < MAX_INPUT_WAITTING_TIME) {
-        if (SDL_PollEvent(&event) && event.type == SDL_JOYBUTTONDOWN) {
-          snprintf(keyname, sizeof(keyname), "%s # %d", SDL_JoystickName(SDL_JoystickFromInstanceID(event.jbutton.which)), event.jbutton.button);
-          m_setting->SaveConfig((Config::MENUITEM)m_menuSelection, keyname);
-          break;
-        }
-      }
+      m_setting->SaveConfig();
     }
     break;
   default:
+    if (Config::MENU_KEYBIND_UP <= m_menuSelection && m_menuSelection <= Config::MENU_KEYBIND_MULTIPLY) {
+      if (bLeft) {
+        memset(keyname, 0, sizeof(keyname));
+        m_setting->SaveConfig((Config::MENUITEM)m_menuSelection, keyname);
+      }
+      if (bSelect) {
+        m_ticktime = ::GetTickCount32();
+        ClearLastEvent();
+        m_listenSetting = true;
+      }
+    }
     break;
   }
-  m_setting->SaveConfig();
 }

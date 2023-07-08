@@ -4,15 +4,16 @@
 #include "RBR/RBR.h"
 #include "Utils/INIUtil.h"
 #include "config.h"
+#include "input.h"
 #include "SDL.h"
 
-class RBRJoykey : public IPlugin {
+class RBRJoykey : public IPlugin, public Input::SDLListener {
 private:
   IRBRGame* m_pGame;
-  std::map<int, SDL_Joystick*> m_joys;
+  bool m_initialized, m_listenSetting;
   int m_menuSelection;
-  float m_scalex, m_scaley;
   Config::Setting *m_setting;
+  DWORD m_ticktime;
 
 public:
   RBRJoykey(IRBRGame* pGame);
@@ -50,9 +51,9 @@ public:
     // Do nothing
   }
 
-public:
-  void CustomRBRDirectXStartSceneJoykey(void);
+  virtual void OnEvent(SDL_Event& event);
 
+public:
   void JoystickButtonPressed(SDL_Event &event);
 
   void JoystickButtonRelease(SDL_Event &event);
